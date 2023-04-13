@@ -1,0 +1,10 @@
+micronaut:
+  application:
+    name: callback-logger
+  server:
+    port: 7070
+    context-path: callback-logger
+netty:
+  default:
+    allocator:
+      max-order: 3
