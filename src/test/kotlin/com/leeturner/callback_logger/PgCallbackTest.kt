@@ -1,4 +1,4 @@
-package com.crownagentsbank.callback
+package com.leeturner.callback_logger
 
 import io.micronaut.runtime.EmbeddedApplication
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest
