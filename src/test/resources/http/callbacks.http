@@ -1,0 +1,28 @@
+POST http://localhost:7070/callback-logger/api/callback
+Content-Type: application/json
+
+{
+  "clientId": "wallet_test",
+  "requestId": "VCpcFPowVwzX",
+  "timestamp": "2023-04-14T09:18:22.132Z",
+  "callbackArgs": null,
+  "transactions": [
+    {
+      "transactionId": "m2zMkIcqHXki",
+      "transactionType": "pay",
+      "statusCode": 100,
+      "statusDescription": "The gateway has received the transaction.",
+      "provider": "swift",
+      "statusType": "pending",
+      "finished": false
+    }
+  ],
+  "finished": false
+}
+
+###
+
+GET http://localhost:7070/callback-logger/api/callback
+Content-Type: application/json
+
+###
