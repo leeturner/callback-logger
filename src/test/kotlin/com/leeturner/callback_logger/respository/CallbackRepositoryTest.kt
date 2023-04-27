@@ -18,11 +18,7 @@ import strikt.assertions.map
 @MicronautTest(environments = [Environment.TEST], startApplication = false)
 class CallbackRepositoryTest(private val callbackRepository: CallbackRepository) {
 
-  private val testPayload =
-      """
-    {"hello": "world", "foo": "bar"}
-  """
-          .trimIndent()
+  private val testPayload = """{"hello": "world", "foo": "bar"}"""
 
   private val testCallback =
       Callback(
@@ -68,14 +64,15 @@ class CallbackRepositoryTest(private val callbackRepository: CallbackRepository)
   internal fun `callbacks saved with timestamps out of order can be returned in order`() {
     // save two callbacks - the second should have a timestamp before the first
     val savedCallback1 = callbackRepository.save(testCallback)
-    val savedCallback2 = callbackRepository.save(testCallback.copy(timestamp = LocalDateTime.now().minusMinutes(10)))
+    val savedCallback2 =
+        callbackRepository.save(testCallback.copy(timestamp = LocalDateTime.now().minusMinutes(10)))
 
     val orderedCallbacks = callbackRepository.listOrderByTimestamp()
 
     // make sure the callbacks have come back in the correct order
     expectThat(orderedCallbacks)
-      .hasSize(2)
-      .map(Callback::id)
-      .containsExactly(savedCallback2.id, savedCallback1.id)
+        .hasSize(2)
+        .map(Callback::id)
+        .containsExactly(savedCallback2.id, savedCallback1.id)
   }
 }

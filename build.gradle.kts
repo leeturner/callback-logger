@@ -37,7 +37,7 @@ dependencies {
   testImplementation("io.strikt:strikt-core:0.34.0")
 }
 
-application { mainClass.set("com.leeturner.callback.ApplicationKt") }
+application { mainClass.set("com.leeturner.callback_logger.ApplicationKt") }
 
 java { sourceCompatibility = JavaVersion.toVersion("17") }
 
