@@ -21,8 +21,3 @@ Content-Type: application/json
 }
 
 ###
-
-GET http://localhost:7070/callback-logger/api/callback
-Content-Type: application/json
-
-###
