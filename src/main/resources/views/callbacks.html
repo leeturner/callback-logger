@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Callback logger</title>
+    <title>Callback Logger - Callbacks Received</title>
     <meta name="author" content="Lee Turner">
 
     <!-- Tailwind -->
@@ -18,19 +18,19 @@
         .nav-item:hover { background: #1947ee; }
     </style>
 </head>
-<body class="bg-gray-100 font-family-karla flex">
+<body class="bg-gray-100 font-family-karla flex" th:with="githubRepo=${'https://github.com/leeturner/callback-logger'}">
 
 <aside class="relative bg-sidebar h-screen w-64 hidden sm:block shadow-xl">
     <div class="p-6">
         <a href="/callback-logger" class="text-white text-3xl font-semibold uppercase hover:text-gray-300">Callbacks</a>
     </div>
     <nav class="text-white text-base font-semibold pt-3">
-        <a href="/callback-logger" class="flex items-center active-nav-link text-white py-4 pl-6 nav-item">
+        <a id="inbox-link" href="/callback-logger" class="flex items-center active-nav-link text-white py-4 pl-6 nav-item">
             <i class="fas fa-table mr-3"></i>
-            Inbox
+            Inbox (<span id="callback-count" th:text="${callbackCount}">3</span>)
         </a>
     </nav>
-    <a href="https://github.com/leeturner/callback-logger" class="absolute w-full upgrade-btn bottom-0 active-nav-link text-white flex items-center justify-center py-4">
+    <a id="github-link" th:href="${githubRepo}" class="absolute w-full upgrade-btn bottom-0 active-nav-link text-white flex items-center justify-center py-4">
         <i class="fas fa-arrow-circle-up mr-3"></i>
         Github
     </a>
@@ -54,7 +54,7 @@
                 <i class="fas fa-table mr-3"></i>
                 Inbox
             </a>
-            <a href="https://github.com/leeturner/callback-logger" class="flex items-center active-nav-link text-white py-2 pl-4 nav-item">
+            <a th:href="${githubRepo}" class="flex items-center active-nav-link text-white py-2 pl-4 nav-item">
                 <i class="fas fa-arrow-circle-up mr-3"></i>
                 Github
             </a>
@@ -63,7 +63,7 @@
 
     <div class="w-full h-screen overflow-x-hidden border-t flex flex-col">
         <main class="w-full flex-grow p-6">
-            <h1 class="text-3xl text-black pb-6">Callbacks Received - <span th:text="${callbackCount}">3</span></h1>
+            <h1 class="text-3xl text-black pb-6">Inbox</h1>
 
             <div class="w-full mt-6">
                 <div class="bg-white overflow-auto">
@@ -77,11 +77,11 @@
                         </tr>
                         </thead>
                         <tbody class="text-gray-700">
-                        <tr th:each="callback,iterStat : ${callbacks}" th:class="${iterStat.odd}? 'bg-gray-200'">
-                            <td class="text-left py-3 px-4" th:title="${callback.timestamp}" th:text="${callback.formattedTimestamp}">2023-04-14T09:18:22.132Z</td>
-                            <td class="text-left py-3 px-4" th:text="${callback.httpMethod}">POST</td>
-                            <td class="text-left py-3 px-4" th:text="${callback.httpVersion}">HTTP_1_1</td>
-                            <td class="w-1/2 text-left py-3 px-4" th:text="${callback.payload}">"{"hello": "world", "foo": "bar"}</td>
+                        <tr th:each="callback,iterStat : ${callbacks}" th:id="${'callback-' + iterStat.count}" th:class="${iterStat.odd}? 'bg-gray-200'">
+                            <td th:id="${'callback-' + iterStat.count + '-timestamp'}" class="text-left py-3 px-4" th:title="${callback.timestamp}" th:text="${callback.formattedTimestamp}">2023-04-14T09:18:22.132Z</td>
+                            <td th:id="${'callback-' + iterStat.count + '-httpMethod'}" class="text-left py-3 px-4" th:text="${callback.httpMethod}">POST</td>
+                            <td th:id="${'callback-' + iterStat.count + '-httpVersion'}" class="text-left py-3 px-4" th:text="${callback.httpVersion}">HTTP_1_1</td>
+                            <td th:id="${'callback-' + iterStat.count + '-payload'}" class="w-1/2 text-left py-3 px-4" th:text="${callback.payload}">"{"hello": "world", "foo": "bar"}</td>
                         </tr>
                         </tbody>
                     </table>
