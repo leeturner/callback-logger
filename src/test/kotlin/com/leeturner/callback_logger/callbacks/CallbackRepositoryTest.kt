@@ -1,6 +1,6 @@
 package com.leeturner.callback_logger.callbacks
 
-import com.leeturner.callback_logger.TestFixtures
+import com.leeturner.callback_logger.TestFixtures.TEST_JSON_CALLBACK
 import io.micronaut.context.env.Environment
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest
 import java.time.LocalDateTime
@@ -16,13 +16,6 @@ import strikt.assertions.map
 @MicronautTest(environments = [Environment.TEST], startApplication = false)
 class CallbackRepositoryTest(private val callbackRepository: CallbackRepository) {
 
-  private val testCallback =
-      Callback(
-          httpMethod = "POST",
-          httpVersion = "HTTP_1.1",
-          payload = TestFixtures.TEST_JSON_PAYLOAD,
-      )
-
   @BeforeEach
   fun setup() {
     callbackRepository.deleteAll()
@@ -30,14 +23,14 @@ class CallbackRepositoryTest(private val callbackRepository: CallbackRepository)
 
   @Test
   internal fun `callbacks are saved to the database with a default of NEW status`() {
-    val savedCallback = callbackRepository.save(testCallback)
+    val savedCallback = callbackRepository.save(TEST_JSON_CALLBACK)
 
     expectThat(savedCallback) { get { status } isEqualTo CallbackStatus.NEW }
   }
 
   @Test
   internal fun `callbacks are saved to the database with a timestamp of now`() {
-    val savedCallback = callbackRepository.save(testCallback)
+    val savedCallback = callbackRepository.save(TEST_JSON_CALLBACK)
 
     expectThat(savedCallback) {
       // not the best way of testing this but good enough for now
@@ -47,21 +40,21 @@ class CallbackRepositoryTest(private val callbackRepository: CallbackRepository)
 
   @Test
   internal fun `callbacks are saved to the database with the correct values`() {
-    val savedCallback = callbackRepository.save(testCallback)
+    val savedCallback = callbackRepository.save(TEST_JSON_CALLBACK)
 
     expectThat(savedCallback) {
-      get { httpMethod } isEqualTo testCallback.httpMethod
-      get { httpVersion } isEqualTo testCallback.httpVersion
-      get { payload } isEqualTo testCallback.payload
+      get { httpMethod } isEqualTo TEST_JSON_CALLBACK.httpMethod
+      get { httpVersion } isEqualTo TEST_JSON_CALLBACK.httpVersion
+      get { payload } isEqualTo TEST_JSON_CALLBACK.payload
     }
   }
 
   @Test
   internal fun `callbacks are returned ordered by timestamp with the most recent first`() {
     // save two callbacks
-    val savedCallback1 = callbackRepository.save(testCallback)
+    val savedCallback1 = callbackRepository.save(TEST_JSON_CALLBACK)
     val savedCallback2 =
-        callbackRepository.save(testCallback.copy(timestamp = LocalDateTime.now().plusMinutes(10)))
+        callbackRepository.save(TEST_JSON_CALLBACK.copy(timestamp = LocalDateTime.now().plusMinutes(10)))
 
     val orderedCallbacks = callbackRepository.listOrderByTimestampDesc()
 

@@ -32,7 +32,7 @@ class CallbackApiControllerTest(private val callbackRepository: CallbackReposito
         .and()
         .body(TestFixtures.TEST_JSON_PAYLOAD)
         .`when`()
-        .post("/callback-logger/api/callback")
+        .post(CALLBACK_LOGGER_API_URL)
         .then()
         .statusCode(200)
   }
@@ -54,7 +54,7 @@ class CallbackApiControllerTest(private val callbackRepository: CallbackReposito
         .and()
         .body(payload)
         .`when`()
-        .post("/callback-logger/api/callback")
+        .post(CALLBACK_LOGGER_API_URL)
         .then()
         .statusCode(200)
   }
@@ -67,7 +67,7 @@ class CallbackApiControllerTest(private val callbackRepository: CallbackReposito
         .and()
         .body(TestFixtures.TEST_JSON_PAYLOAD)
         .`when`()
-        .post("/callback-logger/api/callback")
+        .post(CALLBACK_LOGGER_API_URL)
         .then()
         .statusCode(200)
 
@@ -81,5 +81,9 @@ class CallbackApiControllerTest(private val callbackRepository: CallbackReposito
       get { status } isEqualTo CallbackStatus.NEW
       get { payload } isEqualTo TestFixtures.TEST_JSON_PAYLOAD
     }
+  }
+
+  companion object {
+    private const val CALLBACK_LOGGER_API_URL = "/callback-logger/api/callback"
   }
 }
