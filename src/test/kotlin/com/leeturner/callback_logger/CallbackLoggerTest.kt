@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 
 @MicronautTest
-class PgCallbackTest {
+class CallbackLoggerTest {
 
   @Inject lateinit var application: EmbeddedApplication<*>
 
