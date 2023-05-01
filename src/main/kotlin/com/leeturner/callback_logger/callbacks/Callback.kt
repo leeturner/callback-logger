@@ -1,13 +1,13 @@
-package com.leeturner.callback_logger.domain
+package com.leeturner.callback_logger.callbacks
 
+import io.micronaut.core.annotation.Introspected
 import io.micronaut.data.annotation.GeneratedValue
 import io.micronaut.data.annotation.Id
 import io.micronaut.data.annotation.MappedEntity
 import io.micronaut.data.annotation.MappedProperty
-import io.micronaut.serde.annotation.Serdeable
 import java.time.LocalDateTime
 
-@Serdeable
+@Introspected
 @MappedEntity
 data class Callback(
     @field:Id @GeneratedValue val id: Long? = null,
