@@ -1,8 +1,6 @@
-package com.leeturner.callback_logger.respository
+package com.leeturner.callback_logger.callbacks
 
-import com.leeturner.callback_logger.domain.Callback
-import com.leeturner.callback_logger.domain.CallbackStatus
-import com.leeturner.callback_logger.repository.CallbackRepository
+import com.leeturner.callback_logger.TestFixtures
 import io.micronaut.context.env.Environment
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest
 import java.time.LocalDateTime
@@ -18,13 +16,11 @@ import strikt.assertions.map
 @MicronautTest(environments = [Environment.TEST], startApplication = false)
 class CallbackRepositoryTest(private val callbackRepository: CallbackRepository) {
 
-  private val testPayload = """{"hello": "world", "foo": "bar"}"""
-
   private val testCallback =
       Callback(
           httpMethod = "POST",
           httpVersion = "HTTP_1.1",
-          payload = testPayload,
+          payload = TestFixtures.TEST_JSON_PAYLOAD,
       )
 
   @BeforeEach
@@ -61,13 +57,13 @@ class CallbackRepositoryTest(private val callbackRepository: CallbackRepository)
   }
 
   @Test
-  internal fun `callbacks saved with timestamps out of order can be returned in order`() {
-    // save two callbacks - the second should have a timestamp before the first
+  internal fun `callbacks are returned ordered by timestamp with the most recent first`() {
+    // save two callbacks
     val savedCallback1 = callbackRepository.save(testCallback)
     val savedCallback2 =
-        callbackRepository.save(testCallback.copy(timestamp = LocalDateTime.now().minusMinutes(10)))
+        callbackRepository.save(testCallback.copy(timestamp = LocalDateTime.now().plusMinutes(10)))
 
-    val orderedCallbacks = callbackRepository.listOrderByTimestamp()
+    val orderedCallbacks = callbackRepository.listOrderByTimestampDesc()
 
     // make sure the callbacks have come back in the correct order
     expectThat(orderedCallbacks)
