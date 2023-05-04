@@ -4,6 +4,7 @@ import com.leeturner.callback_logger.TestFixtures.TEST_JSON_CALLBACK
 import com.leeturner.callback_logger.TestFixtures.TEST_JSON_PAYLOAD
 import com.leeturner.callback_logger.TestFixtures.TEST_XML_CALLBACK
 import com.leeturner.callback_logger.TestFixtures.TEST_XML_PAYLOAD
+import io.micronaut.core.async.publisher.Publishers.then
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest
 import io.restassured.http.ContentType
 import io.restassured.specification.RequestSpecification
@@ -44,6 +45,46 @@ class CallbackWebListViewMultipleCallbacksTest(private val callbackRepository: C
 
     val linkPath = "html.body.'**'.find {it.@id == 'callback-count'}"
     expectThat(response.htmlPath()) { get { getInt("$linkPath.text()") } isEqualTo 2 }
+  }
+  
+  @Test
+  internal fun `the callback list has an enabled clear all link when there are callbacks`(
+    spec: RequestSpecification
+  ) {
+    val response =
+      spec
+        .`when`()
+        .get(CALLBACK_LOGGER_WEB_URL)
+        .then()
+        .assertThat()
+        .statusCode(200)
+        .contentType(ContentType.HTML)
+        .extract()
+        .body()
+
+    val linkPath = "html.body.aside.nav.a.find {it.@id == 'clear-all-link'}"
+    expectThat(response.htmlPath()) {
+      get { getString("$linkPath.text()").trim() } isEqualTo "Clear All"
+    }
+  }
+  
+  @Test
+  internal fun `clicking the clear all menu item removes all callbacks`(
+    spec: RequestSpecification
+  ) {
+    val response =
+      spec
+        .`when`()
+        .get("${CALLBACK_LOGGER_WEB_URL}clear/")
+        .then()
+        .assertThat()
+        .statusCode(200)
+        .contentType(ContentType.HTML)
+        .extract()
+        .body()
+
+    val linkPath = "html.body.'**'.find {it.@id == 'callback-count'}"
+    expectThat(response.htmlPath()) { get { getInt("$linkPath.text()") } isEqualTo 0 }
   }
 
   @Test

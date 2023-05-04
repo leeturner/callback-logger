@@ -9,7 +9,7 @@ import strikt.api.expectThat
 import strikt.assertions.isEqualTo
 
 @MicronautTest
-class CallbackWebListViewZeroCallbacksTest() {
+class CallbackWebListViewZeroCallbacksTest {
 
   @Test
   internal fun `the callback list view has the correct title`(spec: RequestSpecification) {
@@ -41,6 +41,27 @@ class CallbackWebListViewZeroCallbacksTest() {
     val linkPath = "html.body.aside.nav.a.find {it.@id == 'inbox-link'}"
     expectThat(response.htmlPath()) {
       get { getString("$linkPath.text()").trim() } isEqualTo "Inbox (0)"
+    }
+  }
+
+  @Test
+  internal fun `the callback list has a disabled clear all link when there are no callbacks`(
+      spec: RequestSpecification
+  ) {
+    val response =
+        spec
+            .`when`()
+            .get(CALLBACK_LOGGER_WEB_URL)
+            .then()
+            .assertThat()
+            .statusCode(200)
+            .contentType(ContentType.HTML)
+            .extract()
+            .body()
+    
+    val linkPath = "html.body.aside.nav.span.find {it.@id == 'disabled-clear-all-link'}"
+    expectThat(response.htmlPath()) {
+      get { getString("$linkPath.text()").trim() } isEqualTo "Clear All"
     }
   }
 
