@@ -79,7 +79,6 @@ Give a ⭐️ if this project helped you!
 ## ☑️ TODO
 
 - [ ] Setup releases using jReleaser
-- [ ] Add an option to delete callbacks
 
 ## 📝 License
 
