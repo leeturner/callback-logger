@@ -101,7 +101,7 @@
                             <td th:id="${'callback-' + iterStat.count + '-timestamp'}" class="text-left py-3 px-4" th:title="${callback.timestamp}" th:text="${callback.formattedTimestamp}">2023-04-14T09:18:22.132Z</td>
                             <td th:id="${'callback-' + iterStat.count + '-httpMethod'}" class="text-left py-3 px-4" th:text="${callback.httpMethod}">POST</td>
                             <td th:id="${'callback-' + iterStat.count + '-httpVersion'}" class="text-left py-3 px-4" th:text="${callback.httpVersion}">HTTP_1_1</td>
-                            <td th:id="${'callback-' + iterStat.count + '-payload'}" class="w-1/2 text-left py-3 px-4" th:text="${callback.payload}">"{"hello": "world", "foo": "bar"}</td>
+                            <td th:id="${'callback-' + iterStat.count + '-payload'}" class="w-1/2 text-left py-3 px-4 code" th:text="${callback.payload}">"{"hello": "world", "foo": "bar"}</td>
                         </tr>
                         </tbody>
                     </table>

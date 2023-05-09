@@ -20,7 +20,7 @@ class CallbackWebListViewZeroCallbacksTest {
         .assertThat()
         .statusCode(200)
         .contentType(ContentType.HTML)
-        .body("html.head.title", equalTo("Callback Logger - Callbacks Received"))
+        .body("html.head.title", equalTo("Callback Logger - Inbox"))
         .extract()
         .body()
   }
