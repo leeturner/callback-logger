@@ -3,7 +3,7 @@ plugins {
   id("com.google.devtools.ksp") version "1.8.21-1.0.11"
   id("org.jetbrains.kotlin.plugin.allopen") version "1.8.21"
   id("com.github.johnrengelman.shadow") version "8.1.1"
-  id("io.micronaut.application") version "4.0.0-M2"
+  id("io.micronaut.application") version "4.0.0-M3"
 }
 
 version = "0.1"
