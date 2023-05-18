@@ -1,9 +1,9 @@
 plugins {
-  id("org.jetbrains.kotlin.jvm") version "1.6.21"
-  id("org.jetbrains.kotlin.kapt") version "1.6.21"
-  id("org.jetbrains.kotlin.plugin.allopen") version "1.6.21"
-  id("com.github.johnrengelman.shadow") version "7.1.2"
-  id("io.micronaut.application") version "3.7.9"
+  id("org.jetbrains.kotlin.jvm") version "1.8.21"
+  id("org.jetbrains.kotlin.kapt") version "1.8.21"
+  id("org.jetbrains.kotlin.plugin.allopen") version "1.8.21"
+  id("com.github.johnrengelman.shadow") version "8.1.1"
+  id("io.micronaut.application") version "4.0.0-M2"
 }
 
 version = "0.1"
@@ -28,6 +28,7 @@ dependencies {
   implementation("org.jetbrains.kotlin:kotlin-reflect:${kotlinVersion}")
   implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:${kotlinVersion}")
   runtimeOnly("ch.qos.logback:logback-classic")
+  runtimeOnly("org.yaml:snakeyaml")
   implementation("com.h2database:h2")
 
   testImplementation(platform("org.junit:junit-bom:5.9.3"))
@@ -38,7 +39,10 @@ dependencies {
 
 application { mainClass.set("com.leeturner.callback_logger.ApplicationKt") }
 
-java { sourceCompatibility = JavaVersion.toVersion("17") }
+java { 
+  sourceCompatibility = JavaVersion.toVersion("17")
+  targetCompatibility = JavaVersion.toVersion("17")
+}
 
 tasks {
   compileKotlin { kotlinOptions { jvmTarget = "17" } }
