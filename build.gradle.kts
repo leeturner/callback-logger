@@ -1,6 +1,6 @@
 plugins {
   id("org.jetbrains.kotlin.jvm") version "1.8.21"
-  id("org.jetbrains.kotlin.kapt") version "1.8.21"
+  id("com.google.devtools.ksp") version "1.8.21-1.0.11"
   id("org.jetbrains.kotlin.plugin.allopen") version "1.8.21"
   id("com.github.johnrengelman.shadow") version "8.1.1"
   id("io.micronaut.application") version "4.0.0-M2"
@@ -15,9 +15,6 @@ val kotlinVersion = project.properties["kotlinVersion"]
 repositories { mavenCentral() }
 
 dependencies {
-  kapt("io.micronaut.data:micronaut-data-processor")
-  kapt("io.micronaut:micronaut-http-validation")
-  kapt("io.micronaut.serde:micronaut-serde-processor")
   implementation("io.micronaut:micronaut-jackson-databind")
   implementation("io.micronaut.data:micronaut-data-jdbc")
   implementation("io.micronaut.kotlin:micronaut-kotlin-extension-functions")
