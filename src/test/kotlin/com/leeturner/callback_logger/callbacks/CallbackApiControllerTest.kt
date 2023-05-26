@@ -25,7 +25,7 @@ class CallbackApiControllerTest(private val callbackRepository: CallbackReposito
   }
 
   @Test
-  internal fun `a successful request to the api returns a 200 response`() {
+  internal fun `a successful post request to the api returns a 200 response`() {
     spec
         .given()
         .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON)
@@ -36,6 +36,19 @@ class CallbackApiControllerTest(private val callbackRepository: CallbackReposito
         .then()
         .statusCode(200)
   }
+  
+  @Test
+  internal fun `a successful put request to the api returns a 200 response`() {
+    spec
+      .given()
+      .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON)
+      .and()
+      .body(TestFixtures.TEST_JSON_PAYLOAD)
+      .`when`()
+      .put(CALLBACK_LOGGER_API_URL)
+      .then()
+      .statusCode(200)
+  }
 
   @ParameterizedTest
   @CsvSource(
@@ -44,7 +57,7 @@ class CallbackApiControllerTest(private val callbackRepository: CallbackReposito
           [
               "${MediaType.APPLICATION_JSON};${TestFixtures.TEST_JSON_PAYLOAD}",
               "${MediaType.APPLICATION_XML};${TestFixtures.TEST_XML_PAYLOAD}"])
-  internal fun `the callback api supports multiple media types and saves the request in the database`(
+  internal fun `the post callback api supports multiple media types and saves the request in the database`(
       mediaType: String,
       payload: String
   ) {
@@ -59,8 +72,30 @@ class CallbackApiControllerTest(private val callbackRepository: CallbackReposito
         .statusCode(200)
   }
 
+  @ParameterizedTest
+  @CsvSource(
+    delimiter = ';',
+    value =
+    [
+      "${MediaType.APPLICATION_JSON};${TestFixtures.TEST_JSON_PAYLOAD}",
+      "${MediaType.APPLICATION_XML};${TestFixtures.TEST_XML_PAYLOAD}"])
+  internal fun `the put callback api supports multiple media types and saves the request in the database`(
+    mediaType: String,
+    payload: String
+  ) {
+    spec
+      .given()
+      .header(HttpHeaders.CONTENT_TYPE, mediaType)
+      .and()
+      .body(payload)
+      .`when`()
+      .put(CALLBACK_LOGGER_API_URL)
+      .then()
+      .statusCode(200)
+  }
+
   @Test
-  internal fun `the callback api and saves the request in the database`() {
+  internal fun `the post callback api and saves the request in the database`() {
     spec
         .given()
         .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON)
@@ -83,6 +118,30 @@ class CallbackApiControllerTest(private val callbackRepository: CallbackReposito
     }
   }
 
+  @Test
+  internal fun `the put callback api and saves the request in the database`() {
+    spec
+      .given()
+      .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON)
+      .and()
+      .body(TestFixtures.TEST_JSON_PAYLOAD)
+      .`when`()
+      .put(CALLBACK_LOGGER_API_URL)
+      .then()
+      .statusCode(200)
+
+    val callbacks = callbackRepository.findAll().toList()
+    expectThat(callbacks).hasSize(1)
+
+    val callback = callbacks[0]
+    expectThat(callback) {
+      get { httpMethod } isEqualTo "PUT"
+      get { httpVersion } isEqualTo "HTTP_1_1"
+      get { status } isEqualTo CallbackStatus.NEW
+      get { payload } isEqualTo TestFixtures.TEST_JSON_PAYLOAD
+    }
+  }
+  
   companion object {
     private const val CALLBACK_LOGGER_API_URL = "/callback-logger/api/callback"
   }
