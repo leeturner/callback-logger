@@ -23,14 +23,23 @@
 ## ⌨️ Usage
 
 Once up and running you can set the callback url of the API you are testing to the callback endpoint of `callback-logger` - 
-`http://localhost:7070/callback-logger/api/callback`.  You can send a callback manually using the following `curl` 
-request:
+`http://localhost:7070/callback-logger/api/callback`.  Both `POST` and `PUT` methods are supported for the callback 
+endpoint along with multiple content types.  You can send a callback manually using the following `curl` request:
 
 ```shell
 curl -X POST --location "http://localhost:7070/callback-logger/api/callback" \
     -H "Content-Type: application/json" \
     -d "{\"hello\": \"world\"}"
 ```
+
+or
+
+```shell
+curl -X PUT --location "http://localhost:7070/callback-logger/api/callback" \
+    -H "Content-Type: application/xml" \
+    -d "<hello>world</hello>" 
+```
+
 
 `callback-logger` provides a simple web interface to allow you to see the callbacks you have received.  You can access
 the web interface by pointing your browser to `http://localhost:7070/callback-logger`:

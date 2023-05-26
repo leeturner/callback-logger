@@ -7,6 +7,7 @@ import io.micronaut.http.annotation.Body
 import io.micronaut.http.annotation.Consumes
 import io.micronaut.http.annotation.Controller
 import io.micronaut.http.annotation.Post
+import io.micronaut.http.annotation.Put
 import io.micronaut.http.annotation.Status
 import io.micronaut.scheduling.TaskExecutors
 import io.micronaut.scheduling.annotation.ExecuteOn
@@ -20,7 +21,18 @@ class CallbackApiController(
   @Post("/callback")
   @Status(HttpStatus.OK)
   @Consumes(MediaType.ALL)
-  fun callback(@Body body: String, request: HttpRequest<Any>) {
+  fun postCallback(@Body body: String, request: HttpRequest<Any>) {
+    saveAndPrintCallback(body, request)
+  }
+  
+  @Put("/callback")
+  @Status(HttpStatus.OK)
+  @Consumes(MediaType.ALL)
+  fun putCallback(@Body body: String, request: HttpRequest<Any>) {
+    saveAndPrintCallback(body, request)
+  }
+
+  private fun saveAndPrintCallback(body: String, request: HttpRequest<Any>) {
     println()
     println(body)
     println()
