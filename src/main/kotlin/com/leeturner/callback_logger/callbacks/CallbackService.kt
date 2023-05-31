@@ -6,8 +6,8 @@ import jakarta.inject.Singleton
 class CallbackService(
     private val callbackRepository: CallbackRepository,
 ) {
-  fun saveCallback(httpMethod: String, httpVersion: String, body: String) {
-    val callback = Callback(httpMethod = httpMethod, httpVersion = httpVersion, payload = body)
+  fun saveCallback(uri: String, httpMethod: String, httpVersion: String, body: String) {
+    val callback = Callback(uri = uri, httpMethod = httpMethod, httpVersion = httpVersion, payload = body)
     callbackRepository.save(callback)
   }
 
@@ -23,11 +23,13 @@ class CallbackService(
 
   private fun Callback.toDto(): CallbackViewDto {
     return CallbackViewDto(
-        this.id ?: 0,
-        this.status.name,
-        this.timestamp,
-        this.httpMethod,
-        this.httpVersion,
-        this.payload)
+      id = this.id ?: 0,
+      status = this.status.name,
+      uri = this.uri,
+      timestamp = this.timestamp,
+      httpMethod = this.httpMethod,
+      httpVersion = this.httpVersion,
+      payload = this.payload
+    )
   }
 }
