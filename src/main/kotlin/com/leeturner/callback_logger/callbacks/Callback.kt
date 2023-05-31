@@ -13,6 +13,7 @@ data class Callback(
     @field:Id @GeneratedValue val id: Long? = null,
     val timestamp: LocalDateTime = LocalDateTime.now(),
     val status: CallbackStatus = CallbackStatus.NEW,
+    val uri: String,
     val httpMethod: String,
     val httpVersion: String,
     @MappedProperty(definition = "CLOB") val payload: String
