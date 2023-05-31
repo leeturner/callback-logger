@@ -92,6 +92,7 @@
                         <thead class="bg-gray-800 text-white">
                         <tr>
                             <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Timestamp</th>
+                            <th class="text-left py-3 px-4 uppercase font-semibold text-sm">URI</th>
                             <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Http Method</th>
                             <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Http Version</th>
                             <th class="w-1/2 text-left py-3 px-4 uppercase font-semibold text-sm">Callback Body</th>
@@ -100,6 +101,7 @@
                         <tbody class="text-gray-700">
                         <tr th:each="callback,iterStat : ${callbacks}" th:id="${'callback-' + iterStat.count}" th:class="${iterStat.odd}? 'bg-gray-200'">
                             <td th:id="${'callback-' + iterStat.count + '-timestamp'}" class="text-left py-3 px-4" th:title="${callback.timestamp}" th:text="${callback.formattedTimestamp}">2023-04-14T09:18:22.132Z</td>
+                            <td th:id="${'callback-' + iterStat.count + '-uri'}" class="text-left py-3 px-4" th:text="${callback.uri}">/callback-logger/api/callback</td>
                             <td th:id="${'callback-' + iterStat.count + '-httpMethod'}" class="text-left py-3 px-4" th:text="${callback.httpMethod}">POST</td>
                             <td th:id="${'callback-' + iterStat.count + '-httpVersion'}" class="text-left py-3 px-4" th:text="${callback.httpVersion}">HTTP_1_1</td>
                             <td th:id="${'callback-' + iterStat.count + '-payload'}" class="w-1/2 text-left py-3 px-4 code" th:text="${callback.payload}">"{"hello": "world", "foo": "bar"}</td>
