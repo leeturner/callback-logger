@@ -9,6 +9,7 @@ import java.time.format.FormatStyle
 data class CallbackViewDto(
     val id: Long,
     val status: String,
+    val uri: String,
     val timestamp: LocalDateTime,
     val httpMethod: String,
     val httpVersion: String,
