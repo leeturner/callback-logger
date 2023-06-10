@@ -48,12 +48,29 @@ or `post` URIs.  For example:
 
 ```hocon
 callback-logger {
-    custom-callbacks {
-        post = ["/api/custom1", "/api/custom2"]
-        put = ["/api/custom1"]
-    }
+  custom-callbacks {
+    post = ["/api/custom1", "/api/custom2"]
+    put = ["/api/custom1"]
+  }
 }
 ```
+
+### Custom http response codes
+
+By default, callback-logger returns a `200` response code for all callbacks.  If you need to return a different response
+code then you can define the response code in the `application.conf` file.  For example:
+
+```hocon
+callback-logger {
+  custom-callback-response-code = 201
+  custom-callbacks {
+    post = ["/api/custom1", "/api/custom2"]
+    put = ["/api/custom1"]
+  }
+}
+```
+
+The application will fail to start if the response code is not a valid http response code.
 
 Any duplicate URIs will be ignored and all custom URIs need to start with a `/`.  You can then send callbacks to the 
 custom endpoints using the following `curl` request:
