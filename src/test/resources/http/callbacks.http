@@ -49,30 +49,6 @@ Content-Type: application/xml
         <PRICE>$6.81</PRICE>
         <AVAILABILITY>051799</AVAILABILITY>
     </PLANT>
-    <PLANT>
-        <COMMON>Cowslip</COMMON>
-        <BOTANICAL>Caltha palustris</BOTANICAL>
-        <ZONE>4</ZONE>
-        <LIGHT>Mostly Shady</LIGHT>
-        <PRICE>$9.90</PRICE>
-        <AVAILABILITY>030699</AVAILABILITY>
-    </PLANT>
-    <PLANT>
-        <COMMON>Dutchman's-Breeches</COMMON>
-        <BOTANICAL>Dicentra cucullaria</BOTANICAL>
-        <ZONE>3</ZONE>
-        <LIGHT>Mostly Shady</LIGHT>
-        <PRICE>$6.44</PRICE>
-        <AVAILABILITY>012099</AVAILABILITY>
-    </PLANT>
-    <PLANT>
-        <COMMON>Ginger, Wild</COMMON>
-        <BOTANICAL>Asarum canadense</BOTANICAL>
-        <ZONE>3</ZONE>
-        <LIGHT>Mostly Shady</LIGHT>
-        <PRICE>$9.03</PRICE>
-        <AVAILABILITY>041899</AVAILABILITY>
-    </PLANT>
 </CATALOG>
 
 ###

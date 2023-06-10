@@ -38,8 +38,10 @@ class CallbackApiController(
     println()
     println(request.method)
     println(request.httpVersion)
+    println(request.uri)
+    println()
     request.headers.forEach { println("${it.key} -> ${it.value}") }
 
-    callbackService.saveCallback(request.method.name, request.httpVersion.name, body)
+    callbackService.saveCallback(request.uri.toString(), request.method.name, request.httpVersion.name, body)
   }
 }
