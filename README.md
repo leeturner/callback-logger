@@ -55,6 +55,14 @@ callback-logger {
 }
 ```
 
+Any duplicate URIs will be ignored and all custom URIs need to start with a `/`.  You can then send callbacks to the 
+custom endpoints using the following `curl` request:
+
+```shell
+curl -X PUT --location "http://localhost:7070/api/custom1" \
+    -H "Content-Type: application/xml" \
+    -d "<hello>world</hello>" 
+```
 ### Custom http response codes
 
 By default, callback-logger returns a `200` response code for all callbacks.  If you need to return a different response
@@ -72,14 +80,8 @@ callback-logger {
 
 The application will fail to start if the response code is not a valid http response code.
 
-Any duplicate URIs will be ignored and all custom URIs need to start with a `/`.  You can then send callbacks to the 
-custom endpoints using the following `curl` request:
 
-```shell
-curl -X PUT --location "http://localhost:7070/api/custom1" \
-    -H "Content-Type: application/xml" \
-    -d "<hello>world</hello>" 
-```
+### Web UI
 
 `callback-logger` provides a simple web interface to allow you to see the callbacks you have received.  You can access
 the web interface by pointing your browser to `http://localhost:7070/callback-logger`:
