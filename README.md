@@ -40,6 +40,29 @@ curl -X PUT --location "http://localhost:7070/callback-logger/api/callback" \
     -d "<hello>world</hello>" 
 ```
 
+### Custom callbacks
+
+If you need to send callbacks to different callback endpoints than the default `callback-logger` endpoint then you can
+define custom callbacks.  Custom callbacks are defined in the `application.conf` file and are defined as a list of `put`
+or `post` URIs.  For example:
+
+```hocon
+callback-logger {
+    custom-callbacks {
+        post = ["/api/custom1", "/api/custom2"]
+        put = ["/api/custom1"]
+    }
+}
+```
+
+Any duplicate URIs will be ignored and all custom URIs need to start with a `/`.  You can then send callbacks to the 
+custom endpoints using the following `curl` request:
+
+```shell
+curl -X PUT --location "http://localhost:7070/api/custom1" \
+    -H "Content-Type: application/xml" \
+    -d "<hello>world</hello>" 
+```
 
 `callback-logger` provides a simple web interface to allow you to see the callbacks you have received.  You can access
 the web interface by pointing your browser to `http://localhost:7070/callback-logger`:
