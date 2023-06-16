@@ -63,7 +63,7 @@ curl -X PUT --location "http://localhost:7070/api/custom1" \
     -H "Content-Type: application/xml" \
     -d "<hello>world</hello>" 
 ```
-### Custom http response codes
+### Specify the http response code
 
 By default, callback-logger returns a `200` response code for all callbacks.  If you need to return a different response
 code then you can define the response code in the `application.conf` file.  For example:
@@ -71,6 +71,7 @@ code then you can define the response code in the `application.conf` file.  For 
 ```hocon
 callback-logger {
   custom-callback-response-code = 201
+  callback-response-payload = ""
   custom-callbacks {
     post = ["/api/custom1", "/api/custom2"]
     put = ["/api/custom1"]
@@ -80,6 +81,21 @@ callback-logger {
 
 The application will fail to start if the response code is not a valid http response code.
 
+### Specify the http response payload
+
+By default, callback-logger returns an empty string as the response payload for all callbacks.  If you need to return a different response
+payload then you can change that in the `application.conf` file.  For example:
+
+```hocon
+callback-logger {
+  custom-callback-response-code = 200
+  callback-response-payload = "{\"status\": \"OK\", \"message\": \"Callback received\"}"
+  custom-callbacks {
+    post = ["/api/custom1", "/api/custom2"]
+    put = ["/api/custom1"]
+  }
+}
+```
 
 ### Web UI
 
