@@ -1,14 +1,13 @@
 plugins {
-  id("org.jetbrains.kotlin.jvm") version "1.8.22"
-  id("org.jetbrains.kotlin.plugin.allopen") version "1.8.22"
-  id("com.google.devtools.ksp") version "1.8.22-1.0.11"
+  id("org.jetbrains.kotlin.jvm") version "1.9.10"
+  id("org.jetbrains.kotlin.plugin.allopen") version "1.9.10"
+  id("com.google.devtools.ksp") version "1.9.10-1.0.13"
   id("com.github.johnrengelman.shadow") version "8.1.1"
-  id("io.micronaut.application") version "4.0.2"
-  id("io.micronaut.aot") version "4.0.2"
+  id("io.micronaut.application") version "4.0.3"
+  id("io.micronaut.aot") version "4.0.3"
 }
 
 version = "0.1"
-
 group = "com.leeturner.callback_logger"
 
 val kotlinVersion = project.properties["kotlinVersion"]
@@ -21,6 +20,7 @@ repositories {
 }
 
 dependencies {
+  ksp("io.micronaut.serde:micronaut-serde-processor")
   implementation("io.micronaut:micronaut-jackson-databind")
   implementation("io.micronaut.data:micronaut-data-jdbc")
   implementation("io.micronaut.kotlin:micronaut-kotlin-extension-functions")
