@@ -1,10 +1,10 @@
 plugins {
-  id("org.jetbrains.kotlin.jvm") version "1.9.10"
-  id("org.jetbrains.kotlin.plugin.allopen") version "1.9.10"
-  id("com.google.devtools.ksp") version "1.9.10-1.0.13"
+  id("org.jetbrains.kotlin.jvm") version "1.9.21"
+  id("org.jetbrains.kotlin.plugin.allopen") version "1.9.21"
+  id("com.google.devtools.ksp") version "1.9.21-1.0.16"
   id("com.github.johnrengelman.shadow") version "8.1.1"
-  id("io.micronaut.application") version "4.0.3"
-  id("io.micronaut.aot") version "4.0.3"
+  id("io.micronaut.application") version "4.2.1"
+  id("io.micronaut.aot") version "4.2.1"
 }
 
 version = "0.1"
@@ -42,14 +42,14 @@ dependencies {
 application { mainClass.set("com.leeturner.callback_logger.ApplicationKt") }
 
 java {
-  sourceCompatibility = JavaVersion.toVersion("17")
-  targetCompatibility = JavaVersion.toVersion("17")
+  sourceCompatibility = JavaVersion.toVersion("21")
+  targetCompatibility = JavaVersion.toVersion("21")
 }
 
-tasks {
-  compileKotlin { kotlinOptions { jvmTarget = "17" } }
-  compileTestKotlin { kotlinOptions { jvmTarget = "17" } }
-}
+//tasks {
+//  compileKotlin { kotlinOptions { jvmTarget = "17" } }
+//  compileTestKotlin { kotlinOptions { jvmTarget = "17" } }
+//}
 
 graalvmNative.toolchainDetection.set(false)
 
