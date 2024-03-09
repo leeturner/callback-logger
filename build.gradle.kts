@@ -1,10 +1,10 @@
 plugins {
-  id("org.jetbrains.kotlin.jvm") version "1.9.21"
-  id("org.jetbrains.kotlin.plugin.allopen") version "1.9.21"
-  id("com.google.devtools.ksp") version "1.9.21-1.0.16"
+  id("org.jetbrains.kotlin.jvm") version "1.9.22"
+  id("org.jetbrains.kotlin.plugin.allopen") version "1.9.22"
+  id("com.google.devtools.ksp") version "1.9.22-1.0.17"
   id("com.github.johnrengelman.shadow") version "8.1.1"
-  id("io.micronaut.application") version "4.2.1"
-  id("io.micronaut.aot") version "4.2.1"
+  id("io.micronaut.application") version "4.3.4"
+  id("io.micronaut.aot") version "4.3.4"
 }
 
 version = "0.1"
@@ -33,7 +33,7 @@ dependencies {
   runtimeOnly("ch.qos.logback:logback-classic")
   implementation("com.h2database:h2")
 
-  testImplementation(platform("org.junit:junit-bom:5.9.3"))
+  testImplementation(platform("org.junit:junit-bom:5.10.1"))
   testImplementation("org.junit.jupiter:junit-jupiter")
   testImplementation("io.strikt:strikt-core:0.34.1")
   testImplementation("io.micronaut.test:micronaut-test-rest-assured")
@@ -45,11 +45,6 @@ java {
   sourceCompatibility = JavaVersion.toVersion("21")
   targetCompatibility = JavaVersion.toVersion("21")
 }
-
-//tasks {
-//  compileKotlin { kotlinOptions { jvmTarget = "17" } }
-//  compileTestKotlin { kotlinOptions { jvmTarget = "17" } }
-//}
 
 graalvmNative.toolchainDetection.set(false)
 
@@ -78,4 +73,13 @@ configurations.all {
     substitute(module("io.micronaut:micronaut-jackson-databind"))
         .using(module("io.micronaut.serde:micronaut-serde-jackson:1.5.2"))
   }
+}
+
+tasks.named<io.micronaut.gradle.docker.MicronautDockerfile>("dockerfile") {
+  baseImage("eclipse-temurin:21-jre-jammy")
+}
+
+
+tasks.named<io.micronaut.gradle.docker.NativeImageDockerfile>("dockerfileNative") {
+  jdkVersion.set("21")
 }
