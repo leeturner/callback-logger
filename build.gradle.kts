@@ -1,10 +1,10 @@
 plugins {
-  id("org.jetbrains.kotlin.jvm") version "1.9.23"
-  id("org.jetbrains.kotlin.plugin.allopen") version "1.9.23"
-  id("com.google.devtools.ksp") version "1.9.23-1.0.19"
+  id("org.jetbrains.kotlin.jvm") version "1.9.25"
+  id("org.jetbrains.kotlin.plugin.allopen") version "1.9.25"
+  id("com.google.devtools.ksp") version "1.9.25-1.0.20"
   id("com.github.johnrengelman.shadow") version "8.1.1"
-  id("io.micronaut.application") version "4.3.5"
-  id("io.micronaut.aot") version "4.3.5"
+  id("io.micronaut.application") version "4.4.4"
+  id("io.micronaut.aot") version "4.4.4"
 }
 
 version = "0.1"
@@ -33,7 +33,7 @@ dependencies {
   runtimeOnly("ch.qos.logback:logback-classic")
   implementation("com.h2database:h2")
 
-  testImplementation(platform("org.junit:junit-bom:5.10.2"))
+  testImplementation(platform("org.junit:junit-bom:5.11.0-M2"))
   testImplementation("org.junit.jupiter:junit-jupiter")
   testImplementation("io.strikt:strikt-core:0.34.1")
   testImplementation("io.micronaut.test:micronaut-test-rest-assured")
