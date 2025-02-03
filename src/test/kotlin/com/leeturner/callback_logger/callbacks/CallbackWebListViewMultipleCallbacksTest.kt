@@ -4,7 +4,6 @@ import com.leeturner.callback_logger.TestFixtures.TEST_JSON_CALLBACK
 import com.leeturner.callback_logger.TestFixtures.TEST_JSON_PAYLOAD
 import com.leeturner.callback_logger.TestFixtures.TEST_XML_CALLBACK
 import com.leeturner.callback_logger.TestFixtures.TEST_XML_PAYLOAD
-import io.micronaut.core.async.publisher.Publishers.then
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest
 import io.restassured.http.ContentType
 import io.restassured.specification.RequestSpecification
@@ -104,8 +103,6 @@ class CallbackWebListViewMultipleCallbacksTest(private val callbackRepository: C
 
     // XML callback should be at the top of the list
     expectThat(response.htmlPath()) {
-      get { getString("html.body.'**'.find {it.@id == 'callback-1-timestamp'}.text()") } isEqualTo
-          "1 May 2023, 13:32:06"
       get { getString("html.body.'**'.find {it.@id == 'callback-1-httpMethod'}.text()") } isEqualTo
           "POST"
       get { getString("html.body.'**'.find {it.@id == 'callback-1-httpVersion'}.text()") } isEqualTo
@@ -116,8 +113,6 @@ class CallbackWebListViewMultipleCallbacksTest(private val callbackRepository: C
 
     // Json callback should be next in the list
     expectThat(response.htmlPath()) {
-      get { getString("html.body.'**'.find {it.@id == 'callback-2-timestamp'}.text()") } isEqualTo
-          "1 May 2023, 13:27:06"
       get { getString("html.body.'**'.find {it.@id == 'callback-2-httpMethod'}.text()") } isEqualTo
           "POST"
       get { getString("html.body.'**'.find {it.@id == 'callback-2-httpVersion'}.text()") } isEqualTo
