@@ -4,7 +4,6 @@ import com.leeturner.callback_logger.TestFixtures.TEST_JSON_CALLBACK
 import com.leeturner.callback_logger.TestFixtures.TEST_JSON_PAYLOAD
 import com.leeturner.callback_logger.TestFixtures.TEST_XML_CALLBACK
 import com.leeturner.callback_logger.TestFixtures.TEST_XML_PAYLOAD
-import io.micronaut.core.async.publisher.Publishers.then
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest
 import io.restassured.http.ContentType
 import io.restassured.specification.RequestSpecification

@@ -5,7 +5,6 @@ import java.time.LocalDateTime
 import org.junit.jupiter.api.Test
 import strikt.api.expectThat
 import strikt.assertions.contains
-import strikt.assertions.isEqualTo
 
 class CallbackViewDtoTest {
 
