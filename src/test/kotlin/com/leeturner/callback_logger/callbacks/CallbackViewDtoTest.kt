@@ -21,6 +21,7 @@ class CallbackViewDtoTest {
 
   @Test
   internal fun `timestamps are formatted correctly for the view`() {
+    println(testCallback.formattedTimestamp)
     expectThat(testCallback.formattedTimestamp).contains("29 Apr 2023")
   }
 }
