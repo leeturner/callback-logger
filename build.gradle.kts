@@ -35,7 +35,7 @@ dependencies {
 
   testImplementation(platform("org.junit:junit-bom:5.12.0-M1"))
   testImplementation("org.junit.jupiter:junit-jupiter")
-  testImplementation("io.strikt:strikt-core:0.34.1")
+  testImplementation("io.strikt:strikt-core:0.35.1")
   testImplementation("io.micronaut.test:micronaut-test-rest-assured")
 }
 
