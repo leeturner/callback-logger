@@ -33,7 +33,7 @@ dependencies {
   runtimeOnly("ch.qos.logback:logback-classic")
   implementation("com.h2database:h2")
 
-  testImplementation(platform("org.junit:junit-bom:6.0.0"))
+  testImplementation(platform("org.junit:junit-bom:6.0.1"))
   testImplementation("org.junit.jupiter:junit-jupiter")
   testImplementation("io.strikt:strikt-core:0.35.1")
   testImplementation("io.micronaut.test:micronaut-test-rest-assured")
