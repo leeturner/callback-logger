@@ -27,14 +27,14 @@ class CallbackApiController(
   @Consumes(MediaType.ALL)
   fun postCallback(@Body body: String, request: HttpRequest<Any>): HttpResponse<String> {
     saveAndPrintCallback(body, request)
-    return HttpResponse.status<String?>(callbackResponseStatusCode).body(callbackResponsePayload)
+    return HttpResponse.status<String>(callbackResponseStatusCode).body(callbackResponsePayload)
   }
 
   @Put("/callback")
   @Consumes(MediaType.ALL)
   fun putCallback(@Body body: String, request: HttpRequest<Any>): HttpResponse<String> {
     saveAndPrintCallback(body, request)
-    return HttpResponse.status<String?>(callbackResponseStatusCode).body(callbackResponsePayload)
+    return HttpResponse.status<String>(callbackResponseStatusCode).body(callbackResponsePayload)
   }
 
   private fun saveAndPrintCallback(body: String, request: HttpRequest<Any>) {

@@ -1,16 +1,16 @@
 plugins {
-  id("org.jetbrains.kotlin.jvm") version "2.3.21"
-  id("org.jetbrains.kotlin.plugin.allopen") version "2.3.21"
-  id("com.google.devtools.ksp") version "2.3.9"
-  id("com.github.johnrengelman.shadow") version "8.1.1"
-  id("io.micronaut.application") version "4.6.2"
-  id("io.micronaut.aot") version "4.6.2"
+  id("org.jetbrains.kotlin.jvm") version "2.4.21"
+  id("org.jetbrains.kotlin.plugin.allopen") version "2.4.21"
+  id("com.google.devtools.ksp") version "2.3.12"
+  id("com.gradleup.shadow") version "9.6.1"
+  id("io.micronaut.application") version "5.0.2"
+  id("io.micronaut.aot") version "5.0.2"
 }
 
 version = "0.1"
 group = "com.leeturner.callback_logger"
 
-val kotlinVersion = project.properties["kotlinVersion"]
+val kotlinVersion = providers.gradleProperty("kotlinVersion").get()
 
 repositories {
   maven("https://s01.oss.sonatype.org/content/repositories/snapshots/") {
@@ -21,7 +21,7 @@ repositories {
 
 dependencies {
   ksp("io.micronaut.serde:micronaut-serde-processor")
-  implementation("io.micronaut:micronaut-jackson-databind")
+  implementation("io.micronaut.serde:micronaut-serde-jackson")
   implementation("io.micronaut.data:micronaut-data-jdbc")
   implementation("io.micronaut.kotlin:micronaut-kotlin-extension-functions")
   implementation("io.micronaut.kotlin:micronaut-kotlin-runtime")
@@ -42,9 +42,11 @@ dependencies {
 application { mainClass.set("com.leeturner.callback_logger.ApplicationKt") }
 
 java {
-  sourceCompatibility = JavaVersion.toVersion("21")
-  targetCompatibility = JavaVersion.toVersion("21")
+  sourceCompatibility = JavaVersion.toVersion("25")
+  targetCompatibility = JavaVersion.toVersion("25")
 }
+
+kotlin { jvmToolchain { languageVersion.set(JavaLanguageVersion.of(25)) } }
 
 graalvmNative.toolchainDetection.set(false)
 
@@ -68,18 +70,11 @@ micronaut {
   }
 }
 
-configurations.all {
-  resolutionStrategy.dependencySubstitution {
-    substitute(module("io.micronaut:micronaut-jackson-databind"))
-        .using(module("io.micronaut.serde:micronaut-serde-jackson:2.16.2"))
-  }
-}
-
 tasks.named<io.micronaut.gradle.docker.MicronautDockerfile>("dockerfile") {
-  baseImage("eclipse-temurin:21-jre-jammy")
+  baseImage("eclipse-temurin:25-jre")
 }
 
 
 tasks.named<io.micronaut.gradle.docker.NativeImageDockerfile>("dockerfileNative") {
-  jdkVersion.set("21")
+  jdkVersion.set("25")
 }
