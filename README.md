@@ -10,7 +10,7 @@
 
 ## 🦿 Prerequisites
 
-- Java 17 or above
+- Java 25 or above
 
 ## 🛠 Installation
 
