@@ -61,5 +61,6 @@ class CustomCallbackTests(
         .put("/api/custom1")
         .then()
         .statusCode(200)
+    expectThat(callbackRepository.findAll().toList()).hasSize(1)
   }
 }
