@@ -1,4 +1,4 @@
-package com.leeturner.callback_logger.callbacks
+package com.leeturner.callback_logger.adapters.inbound.web
 
 import com.leeturner.callback_logger.adapters.outbound.db.DbCallbackRepository
 import com.leeturner.callback_logger.TestFixtures
@@ -47,6 +47,7 @@ class CustomCallbackTests(
         .post("/api/custom1")
         .then()
         .statusCode(200)
+    expectThat(callbackRepository.findAll().toList()).hasSize(1)
   }
 
   @Test
