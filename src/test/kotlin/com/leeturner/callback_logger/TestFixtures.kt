@@ -1,6 +1,6 @@
 package com.leeturner.callback_logger
 
-import com.leeturner.callback_logger.callbacks.Callback
+import com.leeturner.callback_logger.adapters.outbound.db.DbCallback
 
 object TestFixtures {
   const val CALLBACK_LOGGER_API_URL = "/callback-logger/api/callback"
@@ -9,14 +9,14 @@ object TestFixtures {
   const val TEST_XML_PAYLOAD = """<a><test>XML Payload</test></a>"""
 
   val TEST_JSON_CALLBACK =
-      Callback(
+      DbCallback(
           uri = "/api/callback",
           httpMethod = "POST",
           httpVersion = "HTTP_1.1",
           payload = TEST_JSON_PAYLOAD,
       )
   val TEST_XML_CALLBACK =
-      Callback(
+      DbCallback(
           uri = "/api/custom-callback",
           httpMethod = "POST",
           httpVersion = "HTTP_1.1",

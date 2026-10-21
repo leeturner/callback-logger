@@ -1,4 +1,4 @@
-package com.leeturner.callback_logger.callbacks
+package com.leeturner.callback_logger.adapters.inbound.web
 
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest
 import io.restassured.http.ContentType

@@ -1,5 +1,6 @@
-package com.leeturner.callback_logger.callbacks
+package com.leeturner.callback_logger.adapters.inbound.web
 
+import com.leeturner.callback_logger.adapters.outbound.db.DbCallbackRepository
 import com.leeturner.callback_logger.TestFixtures.TEST_JSON_CALLBACK
 import com.leeturner.callback_logger.TestFixtures.TEST_JSON_PAYLOAD
 import com.leeturner.callback_logger.TestFixtures.TEST_XML_CALLBACK
@@ -14,7 +15,7 @@ import strikt.api.expectThat
 import strikt.assertions.isEqualTo
 
 @MicronautTest
-class CallbackWebListViewMultipleCallbacksTest(private val callbackRepository: CallbackRepository) {
+class CallbackWebListViewMultipleCallbacksTest(private val callbackRepository: DbCallbackRepository) {
 
   private val baseDateTime = LocalDateTime.of(2023, 5, 1, 13, 37, 6)
   private val jsonCallbackTimestamp: LocalDateTime = baseDateTime.minusMinutes(10)

@@ -1,5 +1,7 @@
-package com.leeturner.callback_logger.callbacks
+package com.leeturner.callback_logger.adapters.inbound.web
 
+import com.leeturner.callback_logger.adapters.outbound.db.DbCallbackRepository
+import com.leeturner.callback_logger.domain.callbacks.CallbackStatus
 import com.leeturner.callback_logger.TestFixtures
 import io.micronaut.http.HttpHeaders
 import io.micronaut.http.MediaType
@@ -16,7 +18,7 @@ import strikt.assertions.hasSize
 import strikt.assertions.isEqualTo
 
 @MicronautTest
-class CallbackApiControllerTest(private val callbackRepository: CallbackRepository) {
+class CallbackApiControllerTest(private val callbackRepository: DbCallbackRepository) {
 
   @Inject lateinit var spec: RequestSpecification
 

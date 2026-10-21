@@ -1,18 +1,24 @@
-package com.leeturner.callback_logger.callbacks
+package com.leeturner.callback_logger.adapters.inbound.web
 
+import com.leeturner.callback_logger.adapters.outbound.db.DbCallbackRepository
 import com.leeturner.callback_logger.TestFixtures
 import com.leeturner.callback_logger.TestFixtures.CALLBACK_LOGGER_API_URL
+import io.micronaut.context.annotation.Property
 import io.micronaut.http.HttpHeaders
 import io.micronaut.http.MediaType
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest
 import io.restassured.specification.RequestSpecification
 import jakarta.inject.Inject
-import org.hamcrest.Matchers
+import org.hamcrest.Matchers.equalTo
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
-@MicronautTest(environments = ["status"])
-class CallbackApiResponseStatusTests(private val callbackRepository: CallbackRepository) {
+@MicronautTest(environments = ["payload"])
+class CallbackApiResponsePayloadTests(
+    private val callbackRepository: DbCallbackRepository,
+    @Property(name = "callback-logger.callback-response-payload")
+    private val callbackResponsePayload: String,
+) {
 
   @Inject lateinit var spec: RequestSpecification
 
@@ -31,9 +37,9 @@ class CallbackApiResponseStatusTests(private val callbackRepository: CallbackRep
         .`when`()
         .post(CALLBACK_LOGGER_API_URL)
         .then()
-        .statusCode(201)
+        .statusCode(200)
         .and()
-        .body(Matchers.equalTo(""))
+        .body(equalTo(callbackResponsePayload))
   }
 
   @Test
@@ -46,8 +52,8 @@ class CallbackApiResponseStatusTests(private val callbackRepository: CallbackRep
         .`when`()
         .put(CALLBACK_LOGGER_API_URL)
         .then()
-        .statusCode(201)
+        .statusCode(200)
         .and()
-        .body(Matchers.equalTo(""))
+        .body(equalTo(callbackResponsePayload))
   }
 }
