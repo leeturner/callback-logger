@@ -1,5 +1,6 @@
 package com.leeturner.callback_logger.callbacks
 
+import com.leeturner.callback_logger.adapters.outbound.db.DbCallbackRepository
 import com.leeturner.callback_logger.TestFixtures
 import io.micronaut.http.HttpHeaders
 import io.micronaut.http.MediaType
@@ -13,7 +14,7 @@ import strikt.assertions.hasSize
 
 @MicronautTest
 class CustomCallbackTests(
-    private val callbackRepository: CallbackRepository,
+    private val callbackRepository: DbCallbackRepository,
     private val customCallbackRoutes: CustomCallbackRoutes,
     private val customCallbackConfiguration: CustomCallbackConfiguration,
 ) {

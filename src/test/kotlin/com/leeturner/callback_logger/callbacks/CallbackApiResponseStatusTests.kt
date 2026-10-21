@@ -1,5 +1,6 @@
 package com.leeturner.callback_logger.callbacks
 
+import com.leeturner.callback_logger.adapters.outbound.db.DbCallbackRepository
 import com.leeturner.callback_logger.TestFixtures
 import com.leeturner.callback_logger.TestFixtures.CALLBACK_LOGGER_API_URL
 import io.micronaut.http.HttpHeaders
@@ -12,7 +13,7 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
 @MicronautTest(environments = ["status"])
-class CallbackApiResponseStatusTests(private val callbackRepository: CallbackRepository) {
+class CallbackApiResponseStatusTests(private val callbackRepository: DbCallbackRepository) {
 
   @Inject lateinit var spec: RequestSpecification
 

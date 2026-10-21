@@ -32,10 +32,13 @@ dependencies {
   implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:${kotlinVersion}")
   runtimeOnly("ch.qos.logback:logback-classic")
   implementation("com.h2database:h2")
+  implementation("io.arrow-kt:arrow-core:2.2.3")
 
   testImplementation(platform("org.junit:junit-bom:6.1.3"))
   testImplementation("org.junit.jupiter:junit-jupiter")
   testImplementation("io.strikt:strikt-core:0.35.1")
+  testImplementation("io.strikt:strikt-arrow:0.35.1")
+  testImplementation("com.tngtech.archunit:archunit:1.5.1")
   testImplementation("io.micronaut.test:micronaut-test-rest-assured")
 }
 

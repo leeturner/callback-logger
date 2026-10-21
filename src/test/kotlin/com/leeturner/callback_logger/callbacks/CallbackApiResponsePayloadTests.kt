@@ -1,5 +1,6 @@
 package com.leeturner.callback_logger.callbacks
 
+import com.leeturner.callback_logger.adapters.outbound.db.DbCallbackRepository
 import com.leeturner.callback_logger.TestFixtures
 import com.leeturner.callback_logger.TestFixtures.CALLBACK_LOGGER_API_URL
 import io.micronaut.context.annotation.Property
@@ -14,7 +15,7 @@ import org.junit.jupiter.api.Test
 
 @MicronautTest(environments = ["payload"])
 class CallbackApiResponsePayloadTests(
-    private val callbackRepository: CallbackRepository,
+    private val callbackRepository: DbCallbackRepository,
     @Property(name = "callback-logger.callback-response-payload")
     private val callbackResponsePayload: String,
 ) {
