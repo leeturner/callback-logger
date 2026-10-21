@@ -100,7 +100,12 @@ callback-logger {
 ### Web UI
 
 `callback-logger` provides a simple web interface to allow you to see the callbacks you have received.  You can access
-the web interface by pointing your browser to `http://localhost:7070/callback-logger`:
+the web interface by pointing your browser to `http://localhost:7070/callback-logger`.
+
+Press **Refresh** (or tick **Auto-refresh** to check every 5 seconds) to pull in new callbacks, and **Clear All** to
+empty the inbox. Both update the page in place using [Datastar](https://data-star.dev/), without a full page reload.
+The page is styled with [Bulma](https://bulma.io/), and Bulma, Datastar and highlight.js are all served by the app
+itself, so the inbox works with no internet connection:
 
 
 ![](docs/callback-logger-ui.png)

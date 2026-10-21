@@ -80,7 +80,12 @@ class PersistenceFailureTest {
   }
 
   @Test
+  internal fun `refreshing the inbox returns 500 when callbacks cannot be loaded`() {
+    spec.`when`().get("/callback-logger/inbox").then().statusCode(500)
+  }
+
+  @Test
   internal fun `clear returns 500 when callbacks cannot be cleared`() {
-    spec.redirects().follow(false).`when`().get("/callback-logger/clear").then().statusCode(500)
+    spec.`when`().delete("/callback-logger/inbox").then().statusCode(500)
   }
 }
