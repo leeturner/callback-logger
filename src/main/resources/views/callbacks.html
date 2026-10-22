@@ -6,134 +6,160 @@
     <title>Callback Logger - Inbox</title>
     <meta name="author" content="Lee Turner">
 
-    <!-- Tailwind -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/default.min.css">
-    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+    <link rel="stylesheet" href="/callback-logger/static/vendor/bulma/bulma.min.css">
+    <link id="hljs-light" rel="stylesheet" href="/callback-logger/static/vendor/highlightjs/github.min.css" media="(prefers-color-scheme: light)">
+    <link id="hljs-dark" rel="stylesheet" href="/callback-logger/static/vendor/highlightjs/github-dark.min.css" media="(prefers-color-scheme: dark)">
+    <script>
+        // The theme is 'system' (follow the OS), 'light' or 'dark'. It is applied here in the head, before the page
+        // is drawn, so a saved choice doesn't flash the other theme first.
+        const THEMES = ['system', 'light', 'dark'];
+
+        function savedTheme() {
+            try {
+                const theme = localStorage.getItem('theme');
+                return THEMES.includes(theme) ? theme : 'system';
+            } catch (storageUnavailable) {
+                return 'system';
+            }
+        }
+
+        function applyTheme(theme) {
+            const root = document.documentElement;
+            root.dataset.themeChoice = theme;
+            if (theme === 'system') {
+                root.removeAttribute('data-theme');
+            } else {
+                root.dataset.theme = theme;
+            }
+            document.getElementById('hljs-light').media =
+                theme === 'system' ? '(prefers-color-scheme: light)' : theme === 'light' ? 'all' : 'not all';
+            document.getElementById('hljs-dark').media =
+                theme === 'system' ? '(prefers-color-scheme: dark)' : theme === 'dark' ? 'all' : 'not all';
+        }
+
+        function nextTheme() {
+            const theme = THEMES[(THEMES.indexOf(document.documentElement.dataset.themeChoice) + 1) % THEMES.length];
+            try {
+                localStorage.setItem('theme', theme);
+            } catch (storageUnavailable) {
+                // the choice still applies until the page is reloaded
+            }
+            applyTheme(theme);
+        }
+
+        applyTheme(savedTheme());
+    </script>
+    <script src="/callback-logger/static/vendor/highlightjs/highlight.min.js"></script>
+    <script type="module" src="/callback-logger/static/vendor/datastar/datastar.js"></script>
+    <script>
+        // Pretty prints JSON payloads, then lets highlight.js work out the language and colour the payload
+        function formatPayload(el) {
+            try {
+                el.textContent = JSON.stringify(JSON.parse(el.textContent), null, 2);
+            } catch (notJson) {
+                // leave XML, form data and plain text as they arrived
+            }
+            hljs.highlightElement(el);
+        }
+    </script>
 
     <style>
-        @import url('https://fonts.googleapis.com/css?family=Karla:400,700&display=swap');
-        .font-family-karla { font-family: karla; }
-        .bg-sidebar { background: #3d68ff; }
-        .upgrade-btn { background: #1947ee; }
-        .upgrade-btn:hover { background: #0038fd; }
-        .active-nav-link { background: #1947ee; }
-        .nav-item:hover { background: #1947ee; }
-        .hljs { background: none; }
+        body { min-height: 100vh; display: flex; flex-direction: column; }
+        main { flex: 1; }
+        .callback .card-header { box-shadow: none; border-bottom: 1px solid var(--bulma-border-weak); }
+        .callback .method { min-width: 5.5rem; font-weight: 700; }
+        .toolbar { gap: 1rem; }
+        .callback .uri { background: none; color: inherit; padding: 0; font-size: 1rem; word-break: break-all; }
+        .callback .payload { margin: 0; max-height: 32rem; white-space: pre-wrap; word-break: break-word; border-radius: 0 0 var(--bulma-card-radius) var(--bulma-card-radius); }
+        .callback .payload code.hljs { padding: 0; background: none; }
+        #callback-list .is-inline-block { max-width: 100%; overflow-x: auto; }
+        #theme-toggle .theme-system, #theme-toggle .theme-light, #theme-toggle .theme-dark { display: none; }
+        [data-theme-choice="system"] #theme-toggle .theme-system,
+        [data-theme-choice="light"] #theme-toggle .theme-light,
+        [data-theme-choice="dark"] #theme-toggle .theme-dark { display: inline-flex; }
     </style>
 </head>
-<body class="bg-gray-100 font-family-karla flex" th:with="githubRepo=${'https://github.com/leeturner/callback-logger'}">
+<body th:with="githubRepo=${'https://github.com/leeturner/callback-logger'}"
+      data-signals="{autoRefresh: false, inboxError: false}">
 
-<aside class="relative bg-sidebar h-screen w-64 hidden sm:block shadow-xl">
-    <div class="p-6">
-        <a href="/callback-logger/" class="text-white text-3xl font-semibold uppercase hover:text-gray-300">Callbacks</a>
-    </div>
-    <nav class="text-white text-base font-semibold pt-3">
-        <a id="inbox-link" href="/callback-logger/" class="flex items-center active-nav-link text-white py-4 pl-6 nav-item">
-            <i class="fas fa-table mr-3"></i>
-            Inbox (<span id="callback-count" th:text="${callbackCount}">1</span>)
-        </a>
-        <a th:if="${callbackCount != 0}" id="clear-all-link" href="/callback-logger/clear/" class="flex items-center text-white py-4 pl-6 nav-item">
-            <i class="fas fa-trash mr-3"></i>
-            Clear All
-        </a>
-        <span th:if="${callbackCount == 0}" id="disabled-clear-all-link" class="flex items-center text-gray-400 py-4 pl-6">
-            <i class="fas fa-trash mr-3"></i>
-            Clear All
-        </span>
-    </nav>
-    <a id="github-link" th:href="${githubRepo}" class="absolute w-full upgrade-btn bottom-0 active-nav-link text-white flex items-center justify-center py-4">
-        <i class="fas fa-arrow-circle-up mr-3"></i>
-        Github
-    </a>
-</aside>
-
-<div class="relative w-full flex flex-col h-screen overflow-y-hidden">
-
-    <!-- Mobile Header & Nav -->
-    <header x-data="{ isOpen: false }" class="w-full bg-sidebar py-5 px-6 sm:hidden">
-        <div class="flex items-center justify-between">
-            <a href="/callback-logger/" class="text-white text-3xl font-semibold uppercase hover:text-gray-300">Callbacks</a>
-            <button @click="isOpen = !isOpen" class="text-white text-3xl focus:outline-none">
-                <i x-show="!isOpen" class="fas fa-bars"></i>
-                <i x-show="isOpen" class="fas fa-times"></i>
-            </button>
-        </div>
-
-        <!-- Dropdown Nav -->
-        <nav :class="isOpen ? 'flex': 'hidden'" class="flex flex-col pt-4">
-            <a href="/callback-logger/" class="flex items-center active-nav-link text-white py-2 pl-4 nav-item">
-                <i class="fas fa-table mr-3"></i>
-                Inbox
-            </a>
-            <a th:if="${callbackCount != 0}" href="/callback-logger/clear/"
-               class="flex items-center active-nav-link text-white py-2 pl-4 nav-item">
-                <i class="fas fa-trash mr-3"></i>
-                Clear All
-            </a>
-            <span th:if="${callbackCount == 0}" class="flex items-center text-gray-400 py-4 pl-6">
-                <i class="fas fa-trash mr-3"></i>
-                Clear All
+<nav class="navbar is-link" aria-label="main navigation">
+    <div class="container is-flex is-justify-content-space-between is-align-items-center px-3">
+        <a id="home-link" class="navbar-item has-text-weight-bold is-size-5" href="/callback-logger/">
+            <span class="icon mr-2">
+                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 12h-6l-2 3h-4l-2-3H2"/><path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/></svg>
             </span>
-            <a th:href="${githubRepo}" class="flex items-center active-nav-link text-white py-2 pl-4 nav-item">
-                <i class="fas fa-arrow-circle-up mr-3"></i>
-                Github
-            </a>
-        </nav>
-    </header>
+            Callback Logger
+        </a>
+        <div class="is-flex is-align-items-center">
+        <a id="theme-toggle" class="navbar-item" href="#" role="button" onclick="nextTheme(); return false"
+                title="Switch between the system, light and dark themes">
+            <span class="theme-system is-align-items-center">
+                <span class="icon mr-1"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8"/><path d="M12 17v4"/></svg></span>
+                <span class="is-hidden-mobile">System</span>
+            </span>
+            <span class="theme-light is-align-items-center">
+                <span class="icon mr-1"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg></span>
+                <span class="is-hidden-mobile">Light</span>
+            </span>
+            <span class="theme-dark is-align-items-center">
+                <span class="icon mr-1"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg></span>
+                <span class="is-hidden-mobile">Dark</span>
+            </span>
+        </a>
+        <a id="github-link" class="navbar-item" th:href="${githubRepo}" target="_blank" rel="noopener">
+            <span class="icon mr-1">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>
+            </span>
+            <span>Github</span>
+        </a>
+        </div>
+    </div>
+</nav>
 
-    <div class="w-full h-screen overflow-x-hidden border-t flex flex-col">
-        <main class="w-full flex-grow p-6">
-            <h1 class="text-3xl text-black pb-6">Inbox</h1>
-
-            <div class="w-full mt-6">
-                <div class="bg-white overflow-auto">
-                    <table class="min-w-full bg-white">
-                        <thead class="bg-gray-800 text-white">
-                        <tr>
-                            <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Timestamp</th>
-                            <th class="text-left py-3 px-4 uppercase font-semibold text-sm">URI</th>
-                            <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Http Method</th>
-                            <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Http Version</th>
-                            <th class="w-1/2 text-left py-3 px-4 uppercase font-semibold text-sm">Callback Body</th>
-                        </tr>
-                        </thead>
-                        <tbody class="text-gray-700">
-                        <tr th:each="callback,iterStat : ${callbacks}" th:id="${'callback-' + iterStat.count}" th:class="${iterStat.odd}? 'bg-gray-200'">
-                            <td th:id="${'callback-' + iterStat.count + '-timestamp'}" class="text-left py-3 px-4" th:title="${callback.timestamp}" th:text="${callback.formattedTimestamp}">2023-04-14T09:18:22.132Z</td>
-                            <td th:id="${'callback-' + iterStat.count + '-uri'}" class="text-left py-3 px-4" th:text="${callback.uri}">/callback-logger/api/callback</td>
-                            <td th:id="${'callback-' + iterStat.count + '-httpMethod'}" class="text-left py-3 px-4" th:text="${callback.httpMethod}">POST</td>
-                            <td th:id="${'callback-' + iterStat.count + '-httpVersion'}" class="text-left py-3 px-4" th:text="${callback.httpVersion}">HTTP_1_1</td>
-                            <td th:id="${'callback-' + iterStat.count + '-payload'}" class="w-1/2 text-left py-3 px-4 code" th:text="${callback.payload}">"{"hello": "world", "foo": "bar"}</td>
-                        </tr>
-                        </tbody>
-                    </table>
+<main class="section">
+    <div class="container">
+        <div class="toolbar is-flex is-flex-wrap-wrap is-justify-content-space-between is-align-items-center mb-5">
+            <div class="is-flex is-align-items-center">
+                <h1 class="title is-3 mb-0 mr-3">Inbox</h1>
+                <span th:replace="~{inbox :: count}">2</span>
+            </div>
+            <div class="is-flex is-flex-wrap-wrap is-align-items-center">
+                <label class="checkbox mr-4" title="Refresh the inbox every 5 seconds">
+                    <input id="auto-refresh" type="checkbox" data-bind:auto-refresh>
+                    Auto-refresh
+                </label>
+                <div class="buttons mb-0">
+                    <button id="refresh-button" class="button is-link mb-0"
+                            data-indicator:refreshing
+                            data-class:is-loading="$refreshing"
+                            data-on:click="@get('/callback-logger/inbox')">
+                        <span class="icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a9 9 0 1 1-2.64-6.36"/><path d="M21 3v6h-6"/></svg>
+                        </span>
+                        <span>Refresh</span>
+                    </button>
+                    <button th:replace="~{inbox :: clear}">Clear All</button>
                 </div>
             </div>
-            <!--            <code>-->
-            <!--                curl -X POST &#45;&#45;location "http://localhost:7070/callback-logger/api/callback" \-->
-            <!--                -H "Content-Type: application/json" \-->
-            <!--                -d "{\"hello\": \"world\"}"-->
-            <!--            </code>-->
+        </div>
 
-        </main>
+        <div id="inbox-error" class="notification is-danger is-light" style="display: none"
+             data-show="$inboxError"
+             data-on:datastar-fetch="evt.detail.type === 'started' && ($inboxError = false); ['error', 'retries-failed'].includes(evt.detail.type) && ($inboxError = true)">
+            Something went wrong talking to the callback logger. Check the server logs and try again.
+        </div>
 
-        <footer class="w-full bg-white text-right p-4">
-            Template Built by <a target="_blank" href="https://davidgrzyb.com" class="underline">David Grzyb</a>.
-        </footer>
+        <div data-on-interval__duration.5s="$autoRefresh && !$refreshing && @get('/callback-logger/inbox')"></div>
+
+        <div th:replace="~{inbox :: list}">Callbacks</div>
     </div>
+</main>
 
-</div>
-<script>
-    document.querySelectorAll('td.code').forEach(el => {
-        // then highlight each
-        hljs.highlightElement(el);
-    });
-</script>
-<!-- AlpineJS -->
-<script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.x.x/dist/alpine.min.js" defer></script>
-<!-- Font Awesome -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/js/all.min.js"
-        integrity="sha256-KzZiKy0DWYsnwMF+X1DvQngQ2/FxF7MF3Ff72XcpuPs=" crossorigin="anonymous"></script>
+<footer class="footer py-5">
+    <div class="content has-text-centered is-size-7">
+        Callback Logger &middot; <a th:href="${githubRepo}" target="_blank" rel="noopener">View the source on GitHub</a>
+    </div>
+</footer>
+
 </body>
 </html>

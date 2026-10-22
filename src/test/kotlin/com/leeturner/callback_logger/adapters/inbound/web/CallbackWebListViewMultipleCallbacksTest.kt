@@ -12,7 +12,9 @@ import java.time.LocalDateTime
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import strikt.api.expectThat
+import strikt.assertions.contains
 import strikt.assertions.isEqualTo
+import strikt.assertions.isNull
 
 @MicronautTest
 class CallbackWebListViewMultipleCallbacksTest(private val callbackRepository: DbCallbackRepository) {
@@ -48,7 +50,7 @@ class CallbackWebListViewMultipleCallbacksTest(private val callbackRepository: D
   }
   
   @Test
-  internal fun `the callback list has an enabled clear all link when there are callbacks`(
+  internal fun `the callback list has an enabled clear all button when there are callbacks`(
     spec: RequestSpecification
   ) {
     val response =
@@ -62,29 +64,62 @@ class CallbackWebListViewMultipleCallbacksTest(private val callbackRepository: D
         .extract()
         .body()
 
-    val linkPath = "html.body.aside.nav.a.find {it.@id == 'clear-all-link'}"
+    val buttonPath = "html.body.'**'.find {it.@id == 'clear-all-button'}"
     expectThat(response.htmlPath()) {
-      get { getString("$linkPath.text()").trim() } isEqualTo "Clear All"
+      get { getString("$buttonPath.text()").trim() } isEqualTo "Clear All"
+      get { getString("$buttonPath.@disabled") }.isNull()
     }
   }
   
   @Test
-  internal fun `clicking the clear all menu item removes all callbacks`(
+  internal fun `clearing the inbox removes all callbacks and returns the empty inbox fragments`(
     spec: RequestSpecification
   ) {
     val response =
       spec
         .`when`()
-        .get("${CALLBACK_LOGGER_WEB_URL}clear/")
+        .delete("${CALLBACK_LOGGER_WEB_URL}inbox")
         .then()
         .assertThat()
         .statusCode(200)
         .contentType(ContentType.HTML)
+        .header("datastar-mode", "replace")
         .extract()
         .body()
 
-    val linkPath = "html.body.'**'.find {it.@id == 'callback-count'}"
-    expectThat(response.htmlPath()) { get { getInt("$linkPath.text()") } isEqualTo 0 }
+    expectThat(response.htmlPath()) {
+      get { getInt("html.body.'**'.find {it.@id == 'callback-count'}.text()") } isEqualTo 0
+      get { getString("html.body.'**'.find {it.@id == 'clear-all-button'}.@disabled") } isEqualTo "disabled"
+      get { getString("html.body.'**'.find {it.@id == 'empty-inbox'}.p[0].text()").trim() } isEqualTo
+          "No callbacks yet"
+    }
+    expectThat(callbackRepository.count()) isEqualTo 0L
+  }
+
+  @Test
+  internal fun `refreshing the inbox returns just the fragments that change`(
+    spec: RequestSpecification
+  ) {
+    val response =
+      spec
+        .`when`()
+        .get("${CALLBACK_LOGGER_WEB_URL}inbox")
+        .then()
+        .assertThat()
+        .statusCode(200)
+        .contentType(ContentType.HTML)
+        .header("datastar-mode", "replace")
+        .extract()
+        .body()
+
+    expectThat(response.htmlPath()) {
+      get { getInt("html.body.'**'.find {it.@id == 'callback-count'}.text()") } isEqualTo 2
+      get { getString("html.body.'**'.find {it.@id == 'callback-1-payload'}.text()") } isEqualTo
+          TEST_XML_PAYLOAD
+      get { getString("html.body.'**'.find {it.@id == 'callback-2-payload'}.text()") } isEqualTo
+          TEST_JSON_PAYLOAD
+    }
+    expectThat(response.asString()) { not().contains("<title>") }
   }
 
   @Test
