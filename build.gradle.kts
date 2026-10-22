@@ -24,6 +24,7 @@ dependencies {
   implementation("io.micronaut.serde:micronaut-serde-jackson")
   implementation("io.micronaut.kotlin:micronaut-kotlin-extension-functions")
   implementation("io.micronaut.kotlin:micronaut-kotlin-runtime")
+  implementation("io.micronaut.reactor:micronaut-reactor")
   implementation("io.micronaut.views:micronaut-views-thymeleaf")
   implementation("jakarta.annotation:jakarta.annotation-api")
   implementation("org.jetbrains.kotlin:kotlin-reflect:${kotlinVersion}")
