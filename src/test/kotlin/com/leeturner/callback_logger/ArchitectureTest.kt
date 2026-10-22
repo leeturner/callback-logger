@@ -24,7 +24,6 @@ class ArchitectureTest {
             .domainModels("com.leeturner.callback_logger.domain.*")
             .domainServices("com.leeturner.callback_logger.domain.*.ports..")
             .adapter("web", "com.leeturner.callback_logger.adapters.inbound.web..")
-            .adapter("db", "com.leeturner.callback_logger.adapters.outbound.db..")
             .adapter("wiremock", "com.leeturner.callback_logger.adapters.outbound.wiremock..")
             // There is no application-services layer
             .withOptionalLayers(true)

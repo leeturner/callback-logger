@@ -1,7 +1,6 @@
 package com.leeturner.callback_logger
 
 import com.github.tomakehurst.wiremock.WireMockServer
-import com.leeturner.callback_logger.adapters.outbound.db.DbCallback
 import io.micronaut.http.MediaType
 import io.restassured.RestAssured.given
 import io.restassured.response.ValidatableResponse
@@ -25,19 +24,4 @@ object TestFixtures {
 
   const val TEST_JSON_PAYLOAD = """{"hello": "world", "foo": "bar"}"""
   const val TEST_XML_PAYLOAD = """<a><test>XML Payload</test></a>"""
-
-  val TEST_JSON_CALLBACK =
-      DbCallback(
-          uri = "/api/callback",
-          httpMethod = "POST",
-          httpVersion = "HTTP_1.1",
-          payload = TEST_JSON_PAYLOAD,
-      )
-  val TEST_XML_CALLBACK =
-      DbCallback(
-          uri = "/api/custom-callback",
-          httpMethod = "POST",
-          httpVersion = "HTTP_1.1",
-          payload = TEST_XML_PAYLOAD,
-      )
 }
