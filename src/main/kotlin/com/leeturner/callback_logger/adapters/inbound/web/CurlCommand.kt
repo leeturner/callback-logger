@@ -15,7 +15,8 @@ internal fun Callback.toCurl(baseUrl: String): String {
             values.map { value -> "-H " + quote(if (value.isEmpty()) "$name;" else "$name: $value") }
           }
   val data = if (this.payload.isEmpty()) emptyList() else listOf("--data-raw " + quote(this.payload))
-  return (listOf("curl -X ${quote(this.httpMethod)} ${quote(baseUrl + this.uri)}") + headers + data)
+  // -g, or curl reads [ ] and { } in a query string such as a[0]=1 as patterns for several urls
+  return (listOf("curl -g -X ${quote(this.httpMethod)} ${quote(baseUrl + this.uri)}") + headers + data)
       .joinToString(" \\\n  ")
 }
 

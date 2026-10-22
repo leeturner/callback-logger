@@ -10,6 +10,7 @@ clipboard that sends the same request back to the callback logger, so a copy of 
 - The command targets `http://localhost:<wiremock port><uri>`, the same base URL as the empty-inbox example. The
   query string comes with the URI.
 - It always has `-X <method>`.
+- It has `-g`, so curl doesn't read `[ ]` and `{ }` in a query string (`a[0]=1`) as URL patterns.
 - It keeps every header except `Host`, `Content-Length`, `Connection` and `Accept-Encoding` (matched
   case-insensitively). curl sets those itself, and copying them can break the request. A header with several values
   becomes one `-H` per value.

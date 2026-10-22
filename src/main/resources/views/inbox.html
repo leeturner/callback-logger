@@ -90,7 +90,7 @@
       <details th:id="${'callback-' + iterStat.count + '-curl'}" class="curl"
                th:data-panel="${callback.id + '-curl'}" data-init="keepOpen(el)">
         <summary>curl</summary>
-        <pre class="is-size-7 mt-2" th:text="${callback.curl}">curl -X 'POST' 'http://localhost:7071/callback'</pre>
+        <pre class="is-size-7 mt-2" th:text="${callback.curl}">curl -g -X 'POST' 'http://localhost:7071/callback'</pre>
       </details>
     </div>
     <div class="card-content p-0">

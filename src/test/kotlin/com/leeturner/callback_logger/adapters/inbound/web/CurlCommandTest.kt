@@ -22,7 +22,7 @@ class CurlCommandTest {
             .toCurl(BASE_URL)
 
     expectThat(curl) isEqualTo
-        "curl -X 'POST' 'http://localhost:7071/hook?a=1' \\\n" +
+        "curl -g -X 'POST' 'http://localhost:7071/hook?a=1' \\\n" +
             "  -H 'Content-Type: application/json' \\\n" +
             "  -H 'X-Signature: sha256=abc' \\\n" +
             "  --data-raw '{\"hello\": \"world\"}'"
@@ -31,7 +31,7 @@ class CurlCommandTest {
   @Test
   internal fun `a callback without a body has no data flag`() {
     expectThat(callback(method = "GET", uri = "/ping").toCurl(BASE_URL)) isEqualTo
-        "curl -X 'GET' 'http://localhost:7071/ping'"
+        "curl -g -X 'GET' 'http://localhost:7071/ping'"
   }
 
   @Test
@@ -76,6 +76,12 @@ class CurlCommandTest {
       contains("""--data-raw '{"name": "it'\''s"}'""")
       contains("""'http://localhost:7071/it'\''s'""")
     }
+  }
+
+  @Test
+  internal fun `brackets and braces in the url are not treated as curl globs`() {
+    expectThat(callback(uri = "/hook?a[0]=1&f={a,b}").toCurl(BASE_URL))
+        .contains("curl -g -X 'POST' 'http://localhost:7071/hook?a[0]=1&f={a,b}'")
   }
 
   @Test

@@ -285,7 +285,7 @@ class CallbackWebListViewMultipleCallbacksTest(
     sendCallback(server, "/hook?a=1", TEST_JSON_PAYLOAD, headers = mapOf("X-Signature" to "sha256=abc"))
 
     expectThat(inboxPage(spec).getString("html.body.'**'.find {it.@id == 'callback-1-curl'}.pre.text()")) {
-      contains("curl -X 'POST' 'http://localhost:$wireMockPort/hook?a=1'")
+      contains("curl -g -X 'POST' 'http://localhost:$wireMockPort/hook?a=1'")
       contains("-H 'X-Signature: sha256=abc'")
       contains("--data-raw '$TEST_JSON_PAYLOAD'")
     }
