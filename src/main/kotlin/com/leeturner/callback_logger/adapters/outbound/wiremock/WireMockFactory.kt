@@ -27,6 +27,7 @@ class WireMockFactory {
       @Property(name = "callback-logger.callback-response-status-code") status: HttpStatus,
       @Property(name = "callback-logger.callback-response-payload") payload: String,
       @Property(name = "callback-logger.callback-response-content-type") contentType: String,
+      watcher: WireMockCallbackWatcherAdapter,
   ): WireMockServer {
     // checked before WireMock starts, so a bad value stops the app without leaving the port bound
     val responseContentType = validContentType(contentType.ifBlank { MediaType.APPLICATION_JSON })
@@ -35,6 +36,7 @@ class WireMockFactory {
                 .port(port)
                 .mappingSource(NoMappingsSource)
                 .notifier(ConsoleNotifier(true))
+                .extensions(watcher)
                 // the app reads the journal through the WireMockServer object, so the admin API stays locked
                 .adminAuthenticator { false })
         .apply {
