@@ -130,6 +130,25 @@ class CallbackWebListViewZeroCallbacksTest {
   }
 
   @Test
+  internal fun `the callback list view has the theme toggle`(spec: RequestSpecification) {
+    val response =
+        spec
+            .`when`()
+            .get(CALLBACK_LOGGER_WEB_URL)
+            .then()
+            .assertThat()
+            .statusCode(200)
+            .contentType(ContentType.HTML)
+            .extract()
+            .body()
+
+    val togglePath = "html.body.'**'.find {it.@id == 'theme-toggle'}"
+    expectThat(response.htmlPath()) {
+      get { getString("$togglePath.@title") } isEqualTo "Switch between the system, light and dark themes"
+    }
+  }
+
+  @Test
   internal fun `the self hosted css and javascript are served`(spec: RequestSpecification) {
     listOf(
             "bulma/bulma.min.css",
