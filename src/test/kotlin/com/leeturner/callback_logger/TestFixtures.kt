@@ -23,8 +23,6 @@ object TestFixtures {
           .request(method, path)
           .then()
 
-  const val CALLBACK_LOGGER_API_URL = "/callback-logger/api/callback"
-
   const val TEST_JSON_PAYLOAD = """{"hello": "world", "foo": "bar"}"""
   const val TEST_XML_PAYLOAD = """<a><test>XML Payload</test></a>"""
 
