@@ -7,6 +7,7 @@ import com.leeturner.callback_logger.domain.callbacks.Callback
 import io.micronaut.http.MediaType
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest
 import java.time.LocalDateTime
+import java.util.UUID
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import strikt.api.expectThat
@@ -24,6 +25,7 @@ class WireMockCallbackAdaptersTest(
     private val server: WireMockServer,
     private val lister: WireMockCallbackListerAdapter,
     private val clearer: WireMockCallbackClearerAdapter,
+    private val deleter: WireMockCallbackDeleterAdapter,
 ) {
 
   @BeforeEach
@@ -88,6 +90,24 @@ class WireMockCallbackAdaptersTest(
     expectThat(lister.listNewestFirst()).isRight().get { value }.isEmpty()
 
     sendCallback(server, "/three").statusCode(200)
+    expectThat(lister.listNewestFirst()).isRight().get { value }.hasSize(1)
+  }
+
+  @Test
+  internal fun `delete removes just that callback`() {
+    sendCallback(server, "/one")
+    sendCallback(server, "/two")
+    val newest = server.allServeEvents.first().id.toString()
+
+    expectThat(deleter.delete(newest)).isRight()
+    expectThat(lister.listNewestFirst()).isRight().get { value.map(Callback::uri) }.containsExactly("/one")
+  }
+
+  @Test
+  internal fun `deleting a callback that is already gone succeeds`() {
+    sendCallback(server, "/one")
+
+    expectThat(deleter.delete(UUID.randomUUID().toString())).isRight()
     expectThat(lister.listNewestFirst()).isRight().get { value }.hasSize(1)
   }
 }

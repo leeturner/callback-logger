@@ -1,6 +1,7 @@
 package com.leeturner.callback_logger.adapters.inbound.web
 
 import com.leeturner.callback_logger.domain.callbacks.ports.ClearCallbacksPort
+import com.leeturner.callback_logger.domain.callbacks.ports.DeleteCallbackPort
 import com.leeturner.callback_logger.domain.callbacks.ports.ListCallbacksPort
 import io.micronaut.context.annotation.Property
 import io.micronaut.http.HttpResponse
@@ -14,6 +15,7 @@ import org.slf4j.LoggerFactory
 class CallbackWebController(
     private val listCallbacksPort: ListCallbacksPort,
     private val clearCallbacksPort: ClearCallbacksPort,
+    private val deleteCallbackPort: DeleteCallbackPort,
     @Property(name = "callback-logger.wiremock.port")
     private val wireMockPort: Int,
 ) {
@@ -36,6 +38,18 @@ class CallbackWebController(
             logger.error("Failed to clear callbacks: {}", error)
             // thrown rather than returned, as @View would render a 500 response as an empty inbox
             throw IllegalStateException("Failed to clear callbacks: $error")
+          },
+          { inboxResponse() },
+      )
+
+  @View("inbox")
+  @Delete("/inbox/{id}")
+  fun delete(id: String): HttpResponse<Map<String, Any>> =
+      deleteCallbackPort.delete(id).fold(
+          { error ->
+            logger.error("Failed to delete callback {}: {}", id, error)
+            // thrown rather than returned, as @View would render a 500 response as an empty inbox
+            throw IllegalStateException("Failed to delete callback $id: $error")
           },
           { inboxResponse() },
       )

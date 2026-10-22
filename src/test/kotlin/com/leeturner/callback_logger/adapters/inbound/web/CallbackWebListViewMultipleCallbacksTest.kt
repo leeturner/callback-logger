@@ -96,6 +96,54 @@ class CallbackWebListViewMultipleCallbacksTest(private val server: WireMockServe
   }
 
   @Test
+  internal fun `deleting a callback removes just that callback and returns the inbox fragments`(
+    spec: RequestSpecification
+  ) {
+    val xmlCallbackId = server.allServeEvents.first().id
+
+    val response =
+      spec
+        .`when`()
+        .delete("${CALLBACK_LOGGER_WEB_URL}inbox/$xmlCallbackId")
+        .then()
+        .assertThat()
+        .statusCode(200)
+        .contentType(ContentType.HTML)
+        .header("datastar-mode", "replace")
+        .extract()
+        .body()
+
+    expectThat(response.htmlPath()) {
+      get { getInt("html.body.'**'.find {it.@id == 'callback-count'}.text()") } isEqualTo 1
+      get { getString("html.body.'**'.find {it.@id == 'callback-1-payload'}.text()") } isEqualTo
+          TEST_JSON_PAYLOAD
+    }
+    expectThat(server.allServeEvents.map { it.id }).not().contains(xmlCallbackId)
+  }
+
+  @Test
+  internal fun `each callback has a delete button that deletes it by id`(spec: RequestSpecification) {
+    val response =
+      spec
+        .`when`()
+        .get(CALLBACK_LOGGER_WEB_URL)
+        .then()
+        .assertThat()
+        .statusCode(200)
+        .contentType(ContentType.HTML)
+        .extract()
+        .body()
+
+    expectThat(response.htmlPath()) {
+      get { getString("html.body.'**'.find {it.@id == 'callback-1-delete'}.@data-callback-id") } isEqualTo
+          server.allServeEvents.first().id.toString()
+    }
+    // the HTML parser drops attributes with a colon in their name, so check the Datastar action in the raw markup
+    expectThat(response.asString())
+        .contains("""data-on:click="@delete('/callback-logger/inbox/' + el.dataset.callbackId)"""")
+  }
+
+  @Test
   internal fun `refreshing the inbox returns just the fragments that change`(
     spec: RequestSpecification
   ) {
