@@ -23,7 +23,7 @@
 <div th:fragment="list" id="callback-list">
   <div th:if="${callbackCount == 0}" id="empty-inbox" class="box has-text-centered py-6">
     <p class="title is-5">No callbacks yet</p>
-    <p class="subtitle is-6 has-text-grey">Send a request and press Refresh to see it here.</p>
+    <p class="subtitle is-6 has-text-grey">Send a request and it will show up here.</p>
     <pre class="has-text-left is-inline-block" th:text="|curl -X POST ${callbackUrl} \
   -H &quot;Content-Type: application/json&quot; \
   -d '{&quot;hello&quot;: &quot;world&quot;}'|">curl -X POST http://localhost:7071/callback \

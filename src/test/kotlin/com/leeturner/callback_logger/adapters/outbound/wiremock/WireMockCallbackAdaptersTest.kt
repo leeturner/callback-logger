@@ -1,6 +1,7 @@
 package com.leeturner.callback_logger.adapters.outbound.wiremock
 
 import com.github.tomakehurst.wiremock.WireMockServer
+import com.leeturner.callback_logger.TestFixtures.TEST_JSON_PAYLOAD
 import com.leeturner.callback_logger.TestFixtures.TEST_XML_PAYLOAD
 import com.leeturner.callback_logger.TestFixtures.sendCallback
 import com.leeturner.callback_logger.domain.callbacks.Callback
@@ -8,6 +9,9 @@ import io.micronaut.http.MediaType
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest
 import java.time.LocalDateTime
 import java.util.UUID
+import java.util.concurrent.LinkedBlockingQueue
+import java.util.concurrent.TimeUnit.MILLISECONDS
+import java.util.concurrent.TimeUnit.SECONDS
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import strikt.api.expectThat
@@ -19,6 +23,8 @@ import strikt.assertions.isEmpty
 import strikt.assertions.isEqualTo
 import strikt.assertions.isGreaterThan
 import strikt.assertions.isNotBlank
+import strikt.assertions.isNotNull
+import strikt.assertions.isNull
 
 @MicronautTest
 class WireMockCallbackAdaptersTest(
@@ -26,6 +32,7 @@ class WireMockCallbackAdaptersTest(
     private val lister: WireMockCallbackListerAdapter,
     private val clearer: WireMockCallbackClearerAdapter,
     private val deleter: WireMockCallbackDeleterAdapter,
+    private val watcher: WireMockCallbackWatcherAdapter,
 ) {
 
   @BeforeEach
@@ -109,5 +116,27 @@ class WireMockCallbackAdaptersTest(
 
     expectThat(deleter.delete(UUID.randomUUID().toString())).isRight()
     expectThat(lister.listNewestFirst()).isRight().get { value }.hasSize(1)
+  }
+
+  @Test
+  internal fun `a listener hears about a callback once it is in the journal`() {
+    val journalSizes = LinkedBlockingQueue<Int>()
+    watcher.onChange { journalSizes.add(server.allServeEvents.size) }
+
+    sendCallback(server, "/callback", TEST_JSON_PAYLOAD).statusCode(200)
+
+    expectThat(journalSizes.poll(5, SECONDS)) isEqualTo 1
+  }
+
+  @Test
+  internal fun `an admin request does not notify listeners`() {
+    val notifications = LinkedBlockingQueue<Unit>()
+    watcher.onChange { notifications.add(Unit) }
+
+    sendCallback(server, "/__admin/mappings", method = "GET").statusCode(401)
+    sendCallback(server, "/callback", TEST_JSON_PAYLOAD).statusCode(200)
+
+    expectThat(notifications.poll(5, SECONDS)).isNotNull()
+    expectThat(notifications.poll(500, MILLISECONDS)).isNull()
   }
 }

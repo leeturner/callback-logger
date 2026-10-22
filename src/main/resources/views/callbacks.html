@@ -95,7 +95,7 @@
     </style>
 </head>
 <body th:with="githubRepo=${'https://github.com/leeturner/callback-logger'}"
-      data-signals="{autoRefresh: false, inboxError: false}">
+      data-signals="{inboxError: false}">
 
 <nav class="navbar is-link" aria-label="main navigation">
     <div class="container is-flex is-justify-content-space-between is-align-items-center px-3">
@@ -139,10 +139,6 @@
                 <span th:replace="~{inbox :: count}">2</span>
             </div>
             <div class="is-flex is-flex-wrap-wrap is-align-items-center">
-                <label class="checkbox mr-4" title="Refresh the inbox every 5 seconds">
-                    <input id="auto-refresh" type="checkbox" data-bind:auto-refresh>
-                    Auto-refresh
-                </label>
                 <div class="buttons mb-0">
                     <button id="refresh-button" class="button is-link mb-0"
                             data-indicator:refreshing
@@ -164,7 +160,10 @@
             Something went wrong talking to the callback logger. Check the server logs and try again.
         </div>
 
-        <div data-on-interval__duration.5s="$autoRefresh && !$refreshing && @get('/callback-logger/inbox')"></div>
+        <!-- Keeps a stream open so new callbacks appear as they arrive. It sits outside the fragments the stream
+             patches, or each patch would open the stream again. Datastar gives up after 10 retries by default,
+             which would leave the inbox frozen after a few minutes of the app being down, so it keeps trying. -->
+        <div id="inbox-stream" data-init="@get('/callback-logger/inbox/stream', {retryMaxCount: Infinity})"></div>
 
         <div th:replace="~{inbox :: list}">Callbacks</div>
     </div>
