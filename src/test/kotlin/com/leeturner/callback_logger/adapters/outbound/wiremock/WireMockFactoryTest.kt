@@ -20,9 +20,12 @@ class WireMockFactoryTest {
         stubFile,
         """{"priority": 1, "request": {"method": "ANY", "urlPattern": ".*"}, "response": {"status": 418}}""")
 
-    val server = WireMockFactory().wireMockServer(0, HttpStatus.OK, "")
+    val server = WireMockFactory().wireMockServer(0, HttpStatus.OK, "", "")
     try {
-      sendCallback(server, "/callback").statusCode(200).body(equalTo(""))
+      sendCallback(server, "/callback")
+          .statusCode(200)
+          .contentType("application/json")
+          .body(equalTo(""))
     } finally {
       server.stop()
       Files.delete(stubFile)

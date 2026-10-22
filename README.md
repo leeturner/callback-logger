@@ -83,6 +83,22 @@ callback-logger {
 }
 ```
 
+### Specify the http response content type
+
+By default, callback-logger returns a `Content-Type: application/json` header with every response, including when the
+setting is missing or blank.  If your payload is in a different format then set the content type to match.  For
+example, to return XML:
+
+```hocon
+callback-logger {
+  callback-response-payload = "<status>OK</status>"
+  callback-response-content-type = "application/xml"
+}
+```
+
+The application will fail to start if the content type is not a valid media type, such as `xml` instead of
+`application/xml`.
+
 ### Web UI
 
 `callback-logger` provides a simple web interface to allow you to see the callbacks you have received.  You can access
