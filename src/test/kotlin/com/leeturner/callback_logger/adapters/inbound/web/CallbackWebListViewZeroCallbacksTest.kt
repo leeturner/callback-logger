@@ -126,9 +126,22 @@ class CallbackWebListViewZeroCallbacksTest(
             .extract()
             .body()
 
-    val messagePath = "html.body.'**'.find {it.@id == 'empty-inbox'}.p[0]"
+    val messagePath = "html.body.'**'.find {it.@id == 'empty-inbox'}.p"
     expectThat(response.htmlPath()) {
-      get { getString("$messagePath.text()").trim() } isEqualTo "No callbacks yet"
+      get { getString("$messagePath[0].text()").trim() } isEqualTo "No callbacks yet"
+      get { getString("$messagePath[1].text()").trim() } isEqualTo "Send a request and it will show up here."
+    }
+  }
+
+  @Test
+  internal fun `the callback list view opens the live inbox stream`(spec: RequestSpecification) {
+    val page = spec.`when`().get(CALLBACK_LOGGER_WEB_URL).then().statusCode(200).extract().asString()
+
+    // the HTML parser drops attributes with a colon in their name, so check the raw markup
+    expectThat(page) {
+      contains("""data-init="@get('/callback-logger/inbox/stream')"""")
+      not().contains("auto-refresh")
+      not().contains("data-on-interval")
     }
   }
 

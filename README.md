@@ -104,9 +104,9 @@ The application will fail to start if the content type is not a valid media type
 `callback-logger` provides a simple web interface to allow you to see the callbacks you have received.  You can access
 the web interface by pointing your browser to `http://localhost:7070/callback-logger`.
 
-Press **Refresh** (or tick **Auto-refresh** to check every 5 seconds) to pull in new callbacks, **Clear All** to
-empty the inbox, or the bin button on a callback to delete just that one. All of them update the page in place using
-[Datastar](https://data-star.dev/), without a full page reload.
+New callbacks appear in the inbox as they arrive, and clearing or deleting them updates every open tab. Press
+**Refresh** to reload the inbox on demand, **Clear All** to empty it, or the bin button on a callback to delete just
+that one. All of them update the page in place using [Datastar](https://data-star.dev/), without a full page reload.
 The page is styled with [Bulma](https://bulma.io/), and Bulma, Datastar and highlight.js are all served by the app
 itself, so the inbox works with no internet connection:
 
