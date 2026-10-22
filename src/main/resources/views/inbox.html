@@ -49,6 +49,14 @@
         <time th:id="${'callback-' + iterStat.count + '-timestamp'}" class="is-size-7 has-text-grey"
               th:datetime="${callback.timestamp}" th:title="${callback.timestamp}"
               th:text="${callback.formattedTimestamp}">21 Oct 2026, 22:50:27</time>
+        <button th:id="${'callback-' + iterStat.count + '-delete'}" th:data-callback-id="${callback.id}"
+                class="button is-small is-danger is-outlined ml-3" title="Delete this callback"
+                aria-label="Delete this callback"
+                data-on:click="@delete('/callback-logger/inbox/' + el.dataset.callbackId)">
+          <span class="icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg>
+          </span>
+        </button>
       </div>
     </header>
     <div class="details px-5 py-2">
