@@ -11,6 +11,7 @@ import io.micronaut.context.annotation.Context
 import io.micronaut.context.annotation.Factory
 import io.micronaut.context.annotation.Property
 import io.micronaut.http.HttpStatus
+import io.micronaut.http.MediaType
 
 /**
  * WireMock receives every callback on its own port and keeps them in its request journal, which is the callback store.
@@ -25,22 +26,39 @@ class WireMockFactory {
       @Property(name = "callback-logger.wiremock.port") port: Int,
       @Property(name = "callback-logger.callback-response-status-code") status: HttpStatus,
       @Property(name = "callback-logger.callback-response-payload") payload: String,
-  ): WireMockServer =
-      WireMockServer(
-              wireMockConfig()
-                  .port(port)
-                  .mappingSource(NoMappingsSource)
-                  .notifier(ConsoleNotifier(true))
-                  // the app reads the journal through the WireMockServer object, so the admin API stays locked
-                  .adminAuthenticator { false })
-          .apply {
-            start()
-            stubFor(
-                any(anyUrl())
-                    .willReturn(
-                        aResponse()
-                            .withStatus(status.code)
-                            .withHeader("Content-Type", "application/json")
-                            .withBody(payload)))
-          }
+      @Property(name = "callback-logger.callback-response-content-type") contentType: String,
+  ): WireMockServer {
+    // checked before WireMock starts, so a bad value stops the app without leaving the port bound
+    val responseContentType = validContentType(contentType.ifBlank { MediaType.APPLICATION_JSON })
+    return WireMockServer(
+            wireMockConfig()
+                .port(port)
+                .mappingSource(NoMappingsSource)
+                .notifier(ConsoleNotifier(true))
+                // the app reads the journal through the WireMockServer object, so the admin API stays locked
+                .adminAuthenticator { false })
+        .apply {
+          start()
+          stubFor(
+              any(anyUrl())
+                  .willReturn(
+                      aResponse()
+                          .withStatus(status.code)
+                          .withHeader("Content-Type", responseContentType)
+                          .withBody(payload)))
+        }
+  }
+
+  // MediaType.of only rejects values with no slash, so the type and subtype are checked as HTTP tokens too
+  private fun validContentType(value: String): String {
+    val mediaType = MediaType.of(value)
+    require(TOKEN.matches(mediaType.type) && TOKEN.matches(mediaType.subtype)) {
+      "Invalid callback-response-content-type: $value"
+    }
+    return value
+  }
+
+  private companion object {
+    val TOKEN = Regex("[!#$%&'*+.^_`|~0-9A-Za-z-]+")
+  }
 }
