@@ -304,7 +304,11 @@ Expected: FAIL — the `<pre>` still has `http://localhost:7070/callback-logger/
   (was `localhost:7070/callback-logger/api/callback`); `callback-logger.wiremock.port`; remove *Custom callbacks*;
   status/payload sections keep their keys (also fix the existing `custom-callback-response-code` typo to
   `callback-response-status-code`); `/__admin` paths are reserved (401, not logged); JVM only, no native image.
-- `callbacks.http`: both requests to `http://localhost:7071/callback`.
+- `callbacks.http`: the two existing requests (JSON `POST`, XML `PUT`) go to `http://localhost:7071/callback`. Add one
+  example each, separated by `###`, showing what now works: `PATCH` JSON to a nested path
+  (`/orders/42/status`), `DELETE` with no body, `GET` with a query string (`/webhook?event=ping&id=123`), a form
+  `POST` (`application/x-www-form-urlencoded`), a plain-text `POST` with a custom header (`X-Signature`), and a custom
+  method (`PROPFIND /dav/file.txt`).
 - `build.gradle.kts` dockerfile block: `exportPorts(7070, 7071)`.
 
 - [ ] **Step 5: Verify the build, the Dockerfile and the fat jar**
