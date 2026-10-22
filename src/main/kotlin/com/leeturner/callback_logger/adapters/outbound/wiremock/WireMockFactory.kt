@@ -11,6 +11,7 @@ import io.micronaut.context.annotation.Context
 import io.micronaut.context.annotation.Factory
 import io.micronaut.context.annotation.Property
 import io.micronaut.http.HttpStatus
+import java.nio.file.Files
 
 /**
  * WireMock receives every callback on its own port and keeps them in its request journal, which is the callback store.
@@ -29,6 +30,10 @@ class WireMockFactory {
       WireMockServer(
               wireMockConfig()
                   .port(port)
+                  // WireMock otherwise loads stub files from src/test/resources under the working directory, which
+                  // could replace the catch-all response depending on where the app is started
+                  .usingFilesUnderDirectory(
+                      Files.createTempDirectory("callback-logger-wiremock").toFile().apply { deleteOnExit() }.path)
                   .notifier(ConsoleNotifier(true))
                   // the app reads the journal through the WireMockServer object, so the admin API stays locked
                   .adminAuthenticator { false })
