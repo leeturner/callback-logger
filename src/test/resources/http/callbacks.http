@@ -1,4 +1,7 @@
-POST http://localhost:7070/callback-logger/api/callback
+# Callbacks go to WireMock on port 7071, on any path with any HTTP method.
+# The inbox at http://localhost:7070/callback-logger shows them as they arrive.
+
+POST http://localhost:7071/callback
 Content-Type: application/json
 
 {
@@ -21,7 +24,7 @@ Content-Type: application/json
 
 ###
 
-PUT http://localhost:7070/callback-logger/api/callback
+PUT http://localhost:7071/callback
 Content-Type: application/xml
 
 <CATALOG>
@@ -50,5 +53,38 @@ Content-Type: application/xml
         <AVAILABILITY>051799</AVAILABILITY>
     </PLANT>
 </CATALOG>
+
+### A JSON status update to a nested path
+PATCH http://localhost:7071/orders/42/status
+Content-Type: application/json
+
+{
+  "orderId": 42,
+  "status": "shipped",
+  "trackingNumber": "1Z999AA10123456784"
+}
+
+### A DELETE with no body
+DELETE http://localhost:7071/subscriptions/sub_123
+
+### A GET with a query string, as some webhook verifications send
+GET http://localhost:7071/webhook?event=ping&id=123
+
+### A form post
+POST http://localhost:7071/payments/notify
+Content-Type: application/x-www-form-urlencoded
+
+transaction_id=txn_789&status=completed&amount=19.99
+
+### Plain text with a custom signature header
+POST http://localhost:7071/events
+Content-Type: text/plain
+X-Signature: sha256=5d41402abc4b2a76b9719d911017c592
+
+user.created id=abc123
+
+### A custom method, which Micronaut could not route before
+PROPFIND http://localhost:7071/dav/file.txt
+Depth: 1
 
 ###

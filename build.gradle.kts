@@ -22,17 +22,18 @@ repositories {
 dependencies {
   ksp("io.micronaut.serde:micronaut-serde-processor")
   implementation("io.micronaut.serde:micronaut-serde-jackson")
-  implementation("io.micronaut.data:micronaut-data-jdbc")
   implementation("io.micronaut.kotlin:micronaut-kotlin-extension-functions")
   implementation("io.micronaut.kotlin:micronaut-kotlin-runtime")
-  implementation("io.micronaut.sql:micronaut-jdbc-hikari")
   implementation("io.micronaut.views:micronaut-views-thymeleaf")
   implementation("jakarta.annotation:jakarta.annotation-api")
   implementation("org.jetbrains.kotlin:kotlin-reflect:${kotlinVersion}")
   implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:${kotlinVersion}")
   runtimeOnly("ch.qos.logback:logback-classic")
-  implementation("com.h2database:h2")
   implementation("io.arrow-kt:arrow-core:2.2.3")
+  implementation("org.wiremock:wiremock-core:4.0.0-beta.41")
+  implementation("org.wiremock:wiremock-jetty:4.0.0-beta.41")
+  // WireMock 4 fails to start without an HttpClientFactory on the classpath
+  implementation("org.wiremock:wiremock-httpclient-apache5:4.0.0-beta.41")
 
   testImplementation(platform("org.junit:junit-bom:6.1.3"))
   testImplementation("org.junit.jupiter:junit-jupiter")
@@ -75,6 +76,8 @@ micronaut {
 
 tasks.named<io.micronaut.gradle.docker.MicronautDockerfile>("dockerfile") {
   baseImage("eclipse-temurin:25-jre")
+  // 7070 serves the inbox, 7071 is where WireMock receives callbacks
+  exportPorts(7070, 7071)
 }
 
 

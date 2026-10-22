@@ -8,8 +8,7 @@ import java.time.format.FormatStyle
 
 @Serdeable
 data class CallbackView(
-    val id: Long,
-    val status: String,
+    val id: String,
     val uri: String,
     val timestamp: LocalDateTime,
     val httpMethod: String,
@@ -23,7 +22,6 @@ data class CallbackView(
 fun Callback.toView(): CallbackView =
     CallbackView(
         id = this.id,
-        status = this.status.name,
         uri = this.uri,
         timestamp = this.timestamp,
         httpMethod = this.httpMethod,

@@ -1,33 +1,32 @@
 package com.leeturner.callback_logger.adapters.inbound.web
 
-import com.leeturner.callback_logger.adapters.outbound.db.DbCallbackRepository
-import com.leeturner.callback_logger.TestFixtures.TEST_JSON_CALLBACK
+import com.github.tomakehurst.wiremock.WireMockServer
 import com.leeturner.callback_logger.TestFixtures.TEST_JSON_PAYLOAD
-import com.leeturner.callback_logger.TestFixtures.TEST_XML_CALLBACK
 import com.leeturner.callback_logger.TestFixtures.TEST_XML_PAYLOAD
+import com.leeturner.callback_logger.TestFixtures.sendCallback
+import io.micronaut.http.MediaType
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest
+import io.restassured.RestAssured.given
 import io.restassured.http.ContentType
+import io.restassured.path.xml.XmlPath
 import io.restassured.specification.RequestSpecification
-import java.time.LocalDateTime
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import strikt.api.expectThat
 import strikt.assertions.contains
+import strikt.assertions.isEmpty
 import strikt.assertions.isEqualTo
 import strikt.assertions.isNull
 
 @MicronautTest
-class CallbackWebListViewMultipleCallbacksTest(private val callbackRepository: DbCallbackRepository) {
+class CallbackWebListViewMultipleCallbacksTest(private val server: WireMockServer) {
 
-  private val baseDateTime = LocalDateTime.of(2023, 5, 1, 13, 37, 6)
-  private val jsonCallbackTimestamp: LocalDateTime = baseDateTime.minusMinutes(10)
-  private val xmlCallbackTimestamp: LocalDateTime = baseDateTime.minusMinutes(5)
-
+  // sent in this order, so the XML callback is the newest
   @BeforeEach
   fun setup() {
-    callbackRepository.deleteAll()
-    callbackRepository.save(TEST_JSON_CALLBACK.copy(timestamp = jsonCallbackTimestamp))
-    callbackRepository.save(TEST_XML_CALLBACK.copy(timestamp = xmlCallbackTimestamp))
+    server.resetRequests()
+    sendCallback(server, "/api/callback", TEST_JSON_PAYLOAD)
+    sendCallback(server, "/api/custom-callback", TEST_XML_PAYLOAD, MediaType.APPLICATION_XML)
   }
 
   @Test
@@ -93,7 +92,7 @@ class CallbackWebListViewMultipleCallbacksTest(private val callbackRepository: D
       get { getString("html.body.'**'.find {it.@id == 'empty-inbox'}.p[0].text()").trim() } isEqualTo
           "No callbacks yet"
     }
-    expectThat(callbackRepository.count()) isEqualTo 0L
+    expectThat(server.allServeEvents).isEmpty()
   }
 
   @Test
@@ -142,7 +141,7 @@ class CallbackWebListViewMultipleCallbacksTest(private val callbackRepository: D
       get { getString("html.body.'**'.find {it.@id == 'callback-1-httpMethod'}.text()") } isEqualTo
           "POST"
       get { getString("html.body.'**'.find {it.@id == 'callback-1-httpVersion'}.text()") } isEqualTo
-          "HTTP_1.1"
+          "HTTP/1.1"
       get { getString("html.body.'**'.find {it.@id == 'callback-1-payload'}.text()") } isEqualTo
           TEST_XML_PAYLOAD
     }
@@ -152,11 +151,61 @@ class CallbackWebListViewMultipleCallbacksTest(private val callbackRepository: D
       get { getString("html.body.'**'.find {it.@id == 'callback-2-httpMethod'}.text()") } isEqualTo
           "POST"
       get { getString("html.body.'**'.find {it.@id == 'callback-2-httpVersion'}.text()") } isEqualTo
-          "HTTP_1.1"
+          "HTTP/1.1"
       get { getString("html.body.'**'.find {it.@id == 'callback-2-payload'}.text()") } isEqualTo
           TEST_JSON_PAYLOAD
     }
   }
+
+  @Test
+  internal fun `a callback without a body shows No body`(spec: RequestSpecification) {
+    server.resetRequests()
+    sendCallback(server, "/ping", method = "GET")
+
+    expectThat(inboxPage(spec)) {
+      get { getString("html.body.'**'.find {it.@id == 'callback-1-payload'}.text()").trim() } isEqualTo "No body"
+    }
+  }
+
+  @Test
+  internal fun `a callback with a binary body still renders the inbox`(spec: RequestSpecification) {
+    server.resetRequests()
+    // RestAssured directly, as sendCallback takes a String: invalid UTF-8 bytes must reach WireMock as-is
+    given()
+        .baseUri("http://localhost")
+        .port(server.port())
+        .contentType("application/octet-stream")
+        .body(byteArrayOf(0xC3.toByte(), 0x28, 0x00, 0xFF.toByte()))
+        .post("/bin")
+        .then()
+        .statusCode(200)
+
+    expectThat(inboxPage(spec)) {
+      get { getInt("html.body.'**'.find {it.@id == 'callback-count'}.text()") } isEqualTo 1
+    }
+  }
+
+  @Test
+  internal fun `a callback uri keeps its query string`(spec: RequestSpecification) {
+    server.resetRequests()
+    sendCallback(server, "/hook?a=1&b=2")
+
+    expectThat(inboxPage(spec)) {
+      get { getString("html.body.'**'.find {it.@id == 'callback-1-uri'}.text()") } isEqualTo "/hook?a=1&b=2"
+    }
+  }
+
+  private fun inboxPage(spec: RequestSpecification): XmlPath =
+      spec
+          .`when`()
+          .get(CALLBACK_LOGGER_WEB_URL)
+          .then()
+          .assertThat()
+          .statusCode(200)
+          .contentType(ContentType.HTML)
+          .extract()
+          .body()
+          .htmlPath()
 
   companion object {
     private const val CALLBACK_LOGGER_WEB_URL = "/callback-logger/"
