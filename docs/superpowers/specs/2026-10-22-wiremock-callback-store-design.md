@@ -90,10 +90,9 @@ are accepted before anyone opens the inbox) and stopped when the context closes.
 - One stub, `any(anyUrl())`, returning `callback-logger.callback-response-status-code` with body
   `callback-logger.callback-response-payload`. These keys keep their current meaning. The status code is still bound as
   Micronaut's `HttpStatus`, so an invalid code still fails startup, as the README promises.
-- The stub's response headers match today's. A WireMock stub with no headers sends no `Content-Type`, while
-  `CallbackApiController` probably sends Micronaut's default (`application/json`; not confirmed). Before deleting the
-  controller, the builder pins today's `Content-Type` in the status/payload tests, then sets the same header on the
-  stub so those tests pass unchanged.
+- The stub's response sends `Content-Type: application/json`, as today. Checked on 2026-10-22:
+  `CallbackApiController` answers `content-type: application/json` whatever the request's content type, while a
+  WireMock stub with no headers sends none. WireMock's extra `Matched-Stub-Id` response header is harmless and stays.
 - The request journal on, at its default (unbounded).
 - The admin API locked: `adminAuthenticator { false }`, so every `/__admin` request gets a 401 (decided). Left open,
   anyone who can send a callback could shut WireMock down (`POST /__admin/shutdown`) while the inbox still looks
