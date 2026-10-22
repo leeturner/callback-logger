@@ -3,11 +3,11 @@
 Possible next steps for callback-logger. Most of them build on WireMock now receiving callbacks and keeping them in
 its request journal.
 
-Suggested order: 1, then 4, then 2.
+Suggested order: 1, then 4, then 2. Both 1 and 4 are done.
 
 ## Best fits for the current design
 
-### 1. Live inbox instead of polling
+### 1. Live inbox instead of polling (done)
 
 Datastar is built around server-sent events, and WireMock can report each request as it arrives through
 `addMockServiceRequestListener`. Combining the two pushes new callbacks into the open page straight away. The 5-second
@@ -26,7 +26,7 @@ callback to a URL you choose is a bigger job but very useful when debugging a we
 
 ## Smaller but worthwhile
 
-### 4. Cap the request journal
+### 4. Cap the request journal (done)
 
 WireMock keeps every request in memory forever. Setting `maxRequestJournalEntries` with a sensible default (and making
 it configurable) is a one-line safety net for an instance left running.

@@ -27,14 +27,18 @@ class WireMockFactory {
       @Property(name = "callback-logger.callback-response-status-code") status: HttpStatus,
       @Property(name = "callback-logger.callback-response-payload") payload: String,
       @Property(name = "callback-logger.callback-response-content-type") contentType: String,
+      @Property(name = "callback-logger.max-callbacks") maxCallbacks: Int,
       watcher: WireMockCallbackWatcherAdapter,
   ): WireMockServer {
     // checked before WireMock starts, so a bad value stops the app without leaving the port bound
     val responseContentType = validContentType(contentType.ifBlank { MediaType.APPLICATION_JSON })
+    require(maxCallbacks > 0) { "Invalid callback-logger.max-callbacks: $maxCallbacks" }
     return WireMockServer(
             wireMockConfig()
                 .port(port)
                 .mappingSource(NoMappingsSource)
+                // WireMock drops the oldest callbacks past this, so an instance left running can't fill the heap
+                .maxRequestJournalEntries(maxCallbacks)
                 .notifier(ConsoleNotifier(true))
                 .extensions(watcher)
                 // the app reads the journal through the WireMockServer object, so the admin API stays locked
