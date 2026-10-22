@@ -159,10 +159,10 @@ callbacks.
 
 ## Dependencies
 
-Inline in `build.gradle.kts`, the same version as the playground:
+Inline in `build.gradle.kts`, the latest WireMock 4 beta:
 
 - add `org.wiremock:wiremock-core`, `org.wiremock:wiremock-jetty` and `org.wiremock:wiremock-httpclient-apache5`,
-  all `4.0.0-beta.40`. `httpclient-apache5` looks unused but is required: without an `HttpClientFactory` on the
+  all `4.0.0-beta.41`. `httpclient-apache5` looks unused but is required: without an `HttpClientFactory` on the
   classpath WireMock 4 fails to start (`FatalStartupException: No suitable HttpClientFactory was found`).
 - remove `micronaut-data-jdbc`, `micronaut-jdbc-hikari` and `h2`.
 
@@ -203,7 +203,7 @@ The other two rules are unchanged.
 - Console output switches to WireMock's verbose notifier instead of a hand-written listener that matches the old
   `println` format.
 - `httpVersion` shows `HTTP/1.1` instead of `HTTP_1_1`.
-- WireMock `4.0.0-beta.40` (matches the playground) rather than the stable 3.x line.
+- WireMock `4.0.0-beta.41`, the latest beta (the spike and the playground used beta.40), rather than the stable 3.x line.
 - JVM only: the GraalVM native image (`dockerfileNative`) is not supported after this change, because WireMock and
   Jetty would need a lot of reachability metadata. CI never built it, so nothing breaks there; the README says so.
 - Build on the pinned `micronautVersion=5.2.2` (the spike ran on 5.2.15); upgrade only if something conflicts.
