@@ -99,6 +99,19 @@ callback-logger {
 The application will fail to start if the content type is not a valid media type, such as `xml` instead of
 `application/xml`.
 
+### Limit how many callbacks are kept
+
+Callbacks are kept in memory, and by default only the newest `1000` are kept: once there are more, the oldest are
+dropped. To keep a different number, set it in the `application.conf` file.  For example:
+
+```hocon
+callback-logger {
+  max-callbacks = 5000
+}
+```
+
+The application will fail to start if the number is not greater than zero.
+
 ### Web UI
 
 `callback-logger` provides a simple web interface to allow you to see the callbacks you have received.  You can access
