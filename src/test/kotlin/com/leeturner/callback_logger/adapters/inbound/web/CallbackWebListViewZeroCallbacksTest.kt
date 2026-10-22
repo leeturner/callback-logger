@@ -1,5 +1,6 @@
 package com.leeturner.callback_logger.adapters.inbound.web
 
+import io.micronaut.context.annotation.Property
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest
 import io.restassured.http.ContentType
 import io.restassured.specification.RequestSpecification
@@ -10,7 +11,9 @@ import strikt.assertions.contains
 import strikt.assertions.isEqualTo
 
 @MicronautTest
-class CallbackWebListViewZeroCallbacksTest {
+class CallbackWebListViewZeroCallbacksTest(
+    @Property(name = "callback-logger.wiremock.port") private val wireMockPort: Int,
+) {
 
   @Test
   internal fun `the callback list view has the correct title`(spec: RequestSpecification) {
@@ -160,6 +163,26 @@ class CallbackWebListViewZeroCallbacksTest {
         .forEach { asset ->
           spec.`when`().get("${CALLBACK_LOGGER_WEB_URL}static/vendor/$asset").then().assertThat().statusCode(200)
         }
+  }
+
+  @Test
+  internal fun `the empty inbox shows the wiremock callback url`(spec: RequestSpecification) {
+    val response =
+        spec
+            .`when`()
+            .get(CALLBACK_LOGGER_WEB_URL)
+            .then()
+            .assertThat()
+            .statusCode(200)
+            .contentType(ContentType.HTML)
+            .extract()
+            .body()
+
+    val examplePath = "html.body.'**'.find {it.@id == 'empty-inbox'}.pre"
+    expectThat(response.htmlPath().getString("$examplePath.text()")) {
+      contains("http://localhost:$wireMockPort/callback")
+      not().contains("/callback-logger/api/callback")
+    }
   }
 
   companion object {

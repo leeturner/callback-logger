@@ -10,7 +10,7 @@
 
 ## 🦿 Prerequisites
 
-- Java 25 or above
+- Java 25 or above (callback-logger runs on the JVM only; a GraalVM native image is not supported)
 
 ## 🛠 Installation
 
@@ -22,12 +22,14 @@
 
 ## ⌨️ Usage
 
-Once up and running you can set the callback url of the API you are testing to the callback endpoint of `callback-logger` - 
-`http://localhost:7070/callback-logger/api/callback`.  Both `POST` and `PUT` methods are supported for the callback 
-endpoint along with multiple content types.  You can send a callback manually using the following `curl` request:
+Callbacks are received by an embedded [WireMock](https://wiremock.org/) server on its own port, `7071`, while the
+web interface stays on `7070`. Point the API you are testing at **any path** on the callback port, with **any HTTP
+method**, for example `http://localhost:7071/callback` or `http://localhost:7071/orders/42/status`. Every request is
+recorded, whatever its path, method or content type. You can send a callback manually using the following `curl`
+request:
 
 ```shell
-curl -X POST --location "http://localhost:7070/callback-logger/api/callback" \
+curl -X POST --location "http://localhost:7071/callback" \
     -H "Content-Type: application/json" \
     -d "{\"hello\": \"world\"}"
 ```
@@ -35,34 +37,33 @@ curl -X POST --location "http://localhost:7070/callback-logger/api/callback" \
 or
 
 ```shell
-curl -X PUT --location "http://localhost:7070/callback-logger/api/callback" \
+curl -X PATCH --location "http://localhost:7071/orders/42/status" \
     -H "Content-Type: application/xml" \
     -d "<hello>world</hello>" 
 ```
 
-### Custom callbacks
+More examples, including form posts, query strings and custom methods such as `PROPFIND`, are in
+[`src/test/resources/http/callbacks.http`](src/test/resources/http/callbacks.http).
 
-If you need to send callbacks to different callback endpoints than the default `callback-logger` endpoint then you can
-define custom callbacks.  Custom callbacks are defined in the `application.conf` file and are defined as a list of `put`
-or `post` URIs.  For example:
+> **Breaking change:** callbacks used to be sent to `http://localhost:7070/callback-logger/api/callback`, plus any
+> custom callback URIs configured under `callback-logger.custom-callbacks`. Both are gone: send callbacks to the
+> callback port instead. The same paths still work there, only the port has changed.
+
+Paths under `/__admin` are reserved by WireMock. Its admin API is locked, so those requests are refused with a `401`
+and are not recorded as callbacks.
+
+### Change the callback port
+
+The callback port is set in the `application.conf` file:
 
 ```hocon
 callback-logger {
-  custom-callbacks {
-    post = ["/api/custom1", "/api/custom2"]
-    put = ["/api/custom1"]
+  wiremock {
+    port = 7071
   }
 }
 ```
 
-Any duplicate URIs will be ignored and all custom URIs need to start with a `/`.  You can then send callbacks to the 
-custom endpoints using the following `curl` request:
-
-```shell
-curl -X PUT --location "http://localhost:7070/api/custom1" \
-    -H "Content-Type: application/xml" \
-    -d "<hello>world</hello>" 
-```
 ### Specify the http response code
 
 By default, callback-logger returns a `200` response code for all callbacks.  If you need to return a different response
@@ -70,12 +71,7 @@ code then you can define the response code in the `application.conf` file.  For 
 
 ```hocon
 callback-logger {
-  custom-callback-response-code = 201
-  callback-response-payload = ""
-  custom-callbacks {
-    post = ["/api/custom1", "/api/custom2"]
-    put = ["/api/custom1"]
-  }
+  callback-response-status-code = 201
 }
 ```
 
@@ -83,17 +79,13 @@ The application will fail to start if the response code is not a valid http resp
 
 ### Specify the http response payload
 
-By default, callback-logger returns an empty string as the response payload for all callbacks.  If you need to return a different response
-payload then you can change that in the `application.conf` file.  For example:
+By default, callback-logger returns an empty string as the response payload for all callbacks, with a
+`Content-Type: application/json` header.  If you need to return a different response payload then you can change that
+in the `application.conf` file.  For example:
 
 ```hocon
 callback-logger {
-  custom-callback-response-code = 200
   callback-response-payload = "{\"status\": \"OK\", \"message\": \"Callback received\"}"
-  custom-callbacks {
-    post = ["/api/custom1", "/api/custom2"]
-    put = ["/api/custom1"]
-  }
 }
 ```
 

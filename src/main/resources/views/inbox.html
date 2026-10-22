@@ -24,7 +24,9 @@
   <div th:if="${callbackCount == 0}" id="empty-inbox" class="box has-text-centered py-6">
     <p class="title is-5">No callbacks yet</p>
     <p class="subtitle is-6 has-text-grey">Send a request and press Refresh to see it here.</p>
-    <pre class="has-text-left is-inline-block">curl -X POST http://localhost:7070/callback-logger/api/callback \
+    <pre class="has-text-left is-inline-block" th:text="|curl -X POST ${callbackUrl} \
+  -H &quot;Content-Type: application/json&quot; \
+  -d '{&quot;hello&quot;: &quot;world&quot;}'|">curl -X POST http://localhost:7071/callback \
   -H "Content-Type: application/json" \
   -d '{"hello": "world"}'</pre>
   </div>
@@ -35,7 +37,7 @@
         <span th:id="${'callback-' + iterStat.count + '-httpMethod'}"
               th:class="${'tag is-medium method mr-3 ' + (callback.httpMethod == 'POST' ? 'is-success' : callback.httpMethod == 'PUT' ? 'is-warning' : callback.httpMethod == 'DELETE' ? 'is-danger' : callback.httpMethod == 'PATCH' ? 'is-primary' : 'is-info')}"
               th:text="${callback.httpMethod}">POST</span>
-        <code th:id="${'callback-' + iterStat.count + '-uri'}" class="uri" th:text="${callback.uri}">/callback-logger/api/callback</code>
+        <code th:id="${'callback-' + iterStat.count + '-uri'}" class="uri" th:text="${callback.uri}">/callback</code>
       </div>
       <div class="card-header-icon is-flex-wrap-wrap is-justify-content-flex-end">
         <span th:id="${'callback-' + iterStat.count + '-httpVersion'}" class="tag mr-2"

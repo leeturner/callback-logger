@@ -2,6 +2,7 @@ package com.leeturner.callback_logger.adapters.inbound.web
 
 import com.leeturner.callback_logger.domain.callbacks.ports.ClearCallbacksPort
 import com.leeturner.callback_logger.domain.callbacks.ports.ListCallbacksPort
+import io.micronaut.context.annotation.Property
 import io.micronaut.http.HttpResponse
 import io.micronaut.http.annotation.Controller
 import io.micronaut.http.annotation.Delete
@@ -13,6 +14,8 @@ import org.slf4j.LoggerFactory
 class CallbackWebController(
     private val listCallbacksPort: ListCallbacksPort,
     private val clearCallbacksPort: ClearCallbacksPort,
+    @Property(name = "callback-logger.wiremock.port")
+    private val wireMockPort: Int,
 ) {
 
   @View("callbacks")
@@ -48,7 +51,14 @@ class CallbackWebController(
             // thrown rather than returned, as @View would render a 500 response as an empty inbox
             throw IllegalStateException("Failed to list callbacks: $error")
           },
-          { callbacks -> mapOf("callbacks" to callbacks.map { it.toView() }, "callbackCount" to callbacks.size) },
+          { callbacks ->
+            mapOf(
+                "callbacks" to callbacks.map { it.toView() },
+                "callbackCount" to callbacks.size,
+                // WireMock receives callbacks on its own port, on any path; this is just an example for the empty inbox
+                "callbackUrl" to "http://localhost:$wireMockPort/callback",
+            )
+          },
       )
 
   companion object {

@@ -76,6 +76,8 @@ micronaut {
 
 tasks.named<io.micronaut.gradle.docker.MicronautDockerfile>("dockerfile") {
   baseImage("eclipse-temurin:25-jre")
+  // 7070 serves the inbox, 7071 is where WireMock receives callbacks
+  exportPorts(7070, 7071)
 }
 
 
