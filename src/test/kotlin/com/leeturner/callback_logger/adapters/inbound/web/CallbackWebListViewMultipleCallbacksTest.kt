@@ -4,6 +4,7 @@ import com.github.tomakehurst.wiremock.WireMockServer
 import com.leeturner.callback_logger.TestFixtures.TEST_JSON_PAYLOAD
 import com.leeturner.callback_logger.TestFixtures.TEST_XML_PAYLOAD
 import com.leeturner.callback_logger.TestFixtures.sendCallback
+import io.micronaut.context.annotation.Property
 import io.micronaut.http.MediaType
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest
 import io.restassured.RestAssured.given
@@ -19,7 +20,10 @@ import strikt.assertions.isEqualTo
 import strikt.assertions.isNull
 
 @MicronautTest
-class CallbackWebListViewMultipleCallbacksTest(private val server: WireMockServer) {
+class CallbackWebListViewMultipleCallbacksTest(
+    private val server: WireMockServer,
+    @Property(name = "callback-logger.wiremock.port") private val wireMockPort: Int,
+) {
 
   // sent in this order, so the XML callback is the newest
   @BeforeEach
@@ -273,6 +277,37 @@ class CallbackWebListViewMultipleCallbacksTest(private val server: WireMockServe
       get { getString("html.body.'**'.find {it.@id == 'callback-1-bodySize'}") }.isNull()
       get { getString("html.body.'**'.find {it.@id == 'callback-1-queryParams'}") }.isNull()
     }
+  }
+
+  @Test
+  internal fun `each callback has a curl panel that sends it back to the callback logger`(spec: RequestSpecification) {
+    server.resetRequests()
+    sendCallback(server, "/hook?a=1", TEST_JSON_PAYLOAD, headers = mapOf("X-Signature" to "sha256=abc"))
+
+    expectThat(inboxPage(spec).getString("html.body.'**'.find {it.@id == 'callback-1-curl'}.pre.text()")) {
+      contains("curl -g -X 'POST' 'http://localhost:$wireMockPort/hook?a=1'")
+      contains("-H 'X-Signature: sha256=abc'")
+      contains("--data-raw '$TEST_JSON_PAYLOAD'")
+    }
+  }
+
+  @Test
+  internal fun `each callback has a copy as curl button`(spec: RequestSpecification) {
+    val response =
+        spec
+            .`when`()
+            .get(CALLBACK_LOGGER_WEB_URL)
+            .then()
+            .assertThat()
+            .statusCode(200)
+            .contentType(ContentType.HTML)
+            .extract()
+            .body()
+
+    expectThat(response.htmlPath()) {
+      get { getString("html.body.'**'.find {it.@id == 'callback-1-copy-curl'}.@aria-label") } isEqualTo "Copy as curl"
+    }
+    expectThat(response.asString()).contains("""onclick="copyCurl(this)"""")
   }
 
   private fun inboxPage(spec: RequestSpecification): XmlPath =

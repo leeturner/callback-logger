@@ -71,6 +71,18 @@
             el.addEventListener('toggle', () =>
                 el.open ? openPanels.add(el.dataset.panel) : openPanels.delete(el.dataset.panel));
         }
+
+        function copyCurl(button) {
+            const panel = button.closest('.callback').querySelector('details.curl');
+            Promise.resolve()
+                .then(() => navigator.clipboard.writeText(panel.querySelector('pre').textContent))
+                .then(() => {
+                    button.classList.add('is-success');
+                    setTimeout(() => button.classList.remove('is-success'), 1500);
+                })
+                // browsers only allow the clipboard on https or localhost, so the command is shown to copy by hand
+                .catch(() => panel.open = true);
+        }
     </script>
 
     <style>
@@ -87,6 +99,7 @@
         .callback .details .table { background: none; }
         .callback .details th { white-space: nowrap; width: 1%; }
         .callback .details td code { background: none; padding: 0; word-break: break-all; }
+        .callback .details pre { white-space: pre-wrap; word-break: break-all; }
         #callback-list .is-inline-block { max-width: 100%; overflow-x: auto; }
         #theme-toggle .theme-system, #theme-toggle .theme-light, #theme-toggle .theme-dark { display: none; }
         [data-theme-choice="system"] #theme-toggle .theme-system,

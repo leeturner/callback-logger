@@ -19,6 +19,7 @@ data class CallbackView(
     val headers: Map<String, List<String>>,
     val queryParams: Map<String, List<String>>,
     val clientIp: String,
+    val curl: String,
 ) {
   val formattedTimestamp: String
     get() = this.timestamp.format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM))
@@ -32,7 +33,7 @@ data class CallbackView(
         }
 }
 
-fun Callback.toView(): CallbackView =
+fun Callback.toView(baseUrl: String): CallbackView =
     CallbackView(
         id = this.id,
         uri = this.uri,
@@ -44,4 +45,5 @@ fun Callback.toView(): CallbackView =
         headers = this.headers,
         queryParams = this.queryParams,
         clientIp = this.clientIp,
+        curl = this.toCurl(baseUrl),
     )

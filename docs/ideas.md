@@ -19,7 +19,7 @@ WireMock already supports delays (`withFixedDelay`, random delays) and faults (`
 `EMPTY_RESPONSE`). One or two settings next to the existing `callback-response-*` ones would let you test how the
 sender's retry and timeout logic copes. That's the next question people have after "did the callback arrive?"
 
-### 3. Copy as curl / replay
+### 3. Copy as curl / replay (copy as curl done)
 
 A "copy as curl" button on each callback can be built in the template from data the inbox already shows. Replaying a
 callback to a URL you choose is a bigger job but very useful when debugging a webhook handler.

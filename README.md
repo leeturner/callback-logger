@@ -39,6 +39,9 @@ curl -X PATCH --location "http://localhost:7071/orders/42/status" \
 More examples, including form posts, query strings and custom methods such as `PROPFIND`, are in
 [`src/test/resources/http/callbacks.http`](src/test/resources/http/callbacks.http).
 
+Each callback in the inbox has a **Copy as curl** button that copies a `curl` command to send it to the callback
+logger again.
+
 > **Breaking change:** callbacks used to be sent to `http://localhost:7070/callback-logger/api/callback`, plus any
 > custom callback URIs configured under `callback-logger.custom-callbacks`. Both are gone: send callbacks to the
 > callback port instead. The same paths still work there, only the port has changed.

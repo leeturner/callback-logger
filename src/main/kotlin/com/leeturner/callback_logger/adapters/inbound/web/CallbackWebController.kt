@@ -116,11 +116,13 @@ class CallbackWebController(
             throw IllegalStateException("Failed to list callbacks: $error")
           },
           { callbacks ->
+            // WireMock receives callbacks on its own port, on any path
+            val callbackBaseUrl = "http://localhost:$wireMockPort"
             mapOf(
-                "callbacks" to callbacks.map { it.toView() },
+                "callbacks" to callbacks.map { it.toView(callbackBaseUrl) },
                 "callbackCount" to callbacks.size,
-                // WireMock receives callbacks on its own port, on any path; this is just an example for the empty inbox
-                "callbackUrl" to "http://localhost:$wireMockPort/callback",
+                // just an example for the empty inbox
+                "callbackUrl" to "$callbackBaseUrl/callback",
             )
           },
       )
