@@ -71,8 +71,8 @@ Plain JUnit, no `@MicronautTest`. A private `callback(...)` helper in the test b
 - `a callback without a body has no data flag`: method `GET`, uri `/ping` → equals
   `"curl -X 'GET' 'http://localhost:7071/ping'"`.
 - `headers curl sets itself are left out whatever their case`: headers `Host`, `content-length`, `CONNECTION`,
-  `Accept-Encoding`, `X-Keep` → result does not contain `Host`, `content-length`, `CONNECTION`, `Accept-Encoding`
-  (strikt `not().contains(...)`) and contains `-H 'X-Keep: 1'`.
+  `Accept-Encoding`, `X-Keep` → result does not contain `-H 'Host`, `-H 'content-length`, `-H 'CONNECTION`,
+  `-H 'Accept-Encoding` (strikt `not().contains(...)`) and contains `-H 'X-Keep: 1'`.
 - `a header with several values becomes one -H per value`: `X-Multi: [a, b]` → contains `-H 'X-Multi: a'` and
   `-H 'X-Multi: b'`.
 - `a header with an empty value is sent empty`: `X-Empty: [""]` → contains `-H 'X-Empty;'`.
@@ -159,10 +159,12 @@ existing `callbackUrl` (`"$callbackBaseUrl/callback"`).
 
 - [ ] **Step 5: Add `copyCurl` and styles to `callbacks.html`**
 
-`function copyCurl(button)` next to `keepOpen`. It finds the card's `details.curl`, copies its `pre`'s `textContent`
-with `navigator.clipboard.writeText`, and on success adds `is-success` to the button for 1.5 s. On any failure,
-including `navigator.clipboard` being `undefined` (it throws synchronously), it sets the panel's `open = true`,
-which `keepOpen` then remembers. One comment line saying why the panel opens.
+`function copyCurl(button)` next to `keepOpen`. It finds the card's `details.curl` and copies its `pre`'s
+`textContent` with `Promise.resolve().then(() => navigator.clipboard.writeText(text))`, so the synchronous throw when
+`navigator.clipboard` is `undefined` and a rejected write land in the same `.catch`. On success it adds `is-success`
+to the button for 1.5 s; the `.catch` sets the panel's `open = true`, which `keepOpen` then remembers. One comment line
+saying why the panel opens. A stream patch arriving mid-flash replaces the button and drops the highlight; that's
+fine, leave it.
 
 Style: `.callback .details pre { white-space: pre-wrap; word-break: break-all; }` so long URLs and bodies wrap.
 
