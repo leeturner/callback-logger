@@ -33,6 +33,10 @@ dependencies {
   runtimeOnly("ch.qos.logback:logback-classic")
   implementation("com.h2database:h2")
   implementation("io.arrow-kt:arrow-core:2.2.3")
+  implementation("org.wiremock:wiremock-core:4.0.0-beta.41")
+  implementation("org.wiremock:wiremock-jetty:4.0.0-beta.41")
+  // WireMock 4 fails to start without an HttpClientFactory on the classpath
+  implementation("org.wiremock:wiremock-httpclient-apache5:4.0.0-beta.41")
 
   testImplementation(platform("org.junit:junit-bom:6.1.3"))
   testImplementation("org.junit.jupiter:junit-jupiter")
