@@ -40,6 +40,10 @@
         <code th:id="${'callback-' + iterStat.count + '-uri'}" class="uri" th:text="${callback.uri}">/callback</code>
       </div>
       <div class="card-header-icon is-flex-wrap-wrap is-justify-content-flex-end">
+        <span th:id="${'callback-' + iterStat.count + '-clientIp'}" class="tag mr-2" title="Sent from"
+              th:text="${callback.clientIp}">127.0.0.1</span>
+        <span th:if="${callback.bodySize > 0}" th:id="${'callback-' + iterStat.count + '-bodySize'}" class="tag mr-2"
+              title="Body size" th:text="${callback.formattedBodySize}">32 B</span>
         <span th:id="${'callback-' + iterStat.count + '-httpVersion'}" class="tag mr-2"
               th:text="${callback.httpVersion}">HTTP_1_1</span>
         <time th:id="${'callback-' + iterStat.count + '-timestamp'}" class="is-size-7 has-text-grey"
@@ -47,6 +51,28 @@
               th:text="${callback.formattedTimestamp}">21 Oct 2026, 22:50:27</time>
       </div>
     </header>
+    <div class="details px-5 py-2">
+      <details th:id="${'callback-' + iterStat.count + '-headers'}" th:data-panel="${callback.id + '-headers'}"
+               data-init="keepOpen(el)">
+        <summary>Headers <span class="tag is-rounded" th:text="${callback.headers.size()}">2</span></summary>
+        <table class="table is-narrow is-fullwidth is-size-7 mt-2">
+          <tr th:each="header : ${callback.headers}">
+            <th th:text="${header.key}">Content-Type</th>
+            <td><code th:text="${#strings.listJoin(header.value, ', ')}">application/json</code></td>
+          </tr>
+        </table>
+      </details>
+      <details th:unless="${callback.queryParams.isEmpty()}" th:id="${'callback-' + iterStat.count + '-queryParams'}"
+               th:data-panel="${callback.id + '-queryParams'}" data-init="keepOpen(el)">
+        <summary>Query parameters <span class="tag is-rounded" th:text="${callback.queryParams.size()}">2</span></summary>
+        <table class="table is-narrow is-fullwidth is-size-7 mt-2">
+          <tr th:each="param : ${callback.queryParams}">
+            <th th:text="${param.key}">event</th>
+            <td><code th:text="${#strings.listJoin(param.value, ', ')}">ping</code></td>
+          </tr>
+        </table>
+      </details>
+    </div>
     <div class="card-content p-0">
       <pre th:if="${!#strings.isEmpty(callback.payload)}" class="payload"><code
           th:id="${'callback-' + iterStat.count + '-payload'}"

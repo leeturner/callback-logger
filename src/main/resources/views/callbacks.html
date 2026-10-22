@@ -61,6 +61,16 @@
             }
             hljs.highlightElement(el);
         }
+
+        // Each refresh replaces the cards, which would close any headers or query parameters being read, so the
+        // open panels are remembered by callback id and reopened
+        const openPanels = new Set();
+
+        function keepOpen(el) {
+            el.open = openPanels.has(el.dataset.panel);
+            el.addEventListener('toggle', () =>
+                el.open ? openPanels.add(el.dataset.panel) : openPanels.delete(el.dataset.panel));
+        }
     </script>
 
     <style>
@@ -72,6 +82,11 @@
         .callback .uri { background: none; color: inherit; padding: 0; font-size: 1rem; word-break: break-all; }
         .callback .payload { margin: 0; max-height: 32rem; white-space: pre-wrap; word-break: break-word; border-radius: 0 0 var(--bulma-card-radius) var(--bulma-card-radius); }
         .callback .payload code.hljs { padding: 0; background: none; }
+        .callback .details { border-bottom: 1px solid var(--bulma-border-weak); }
+        .callback .details summary { cursor: pointer; padding: 0.25rem 0; }
+        .callback .details .table { background: none; }
+        .callback .details th { white-space: nowrap; width: 1%; }
+        .callback .details td code { background: none; padding: 0; word-break: break-all; }
         #callback-list .is-inline-block { max-width: 100%; overflow-x: auto; }
         #theme-toggle .theme-system, #theme-toggle .theme-light, #theme-toggle .theme-dark { display: none; }
         [data-theme-choice="system"] #theme-toggle .theme-system,

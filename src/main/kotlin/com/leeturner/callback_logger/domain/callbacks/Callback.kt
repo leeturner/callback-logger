@@ -9,4 +9,8 @@ data class Callback(
     val httpMethod: String,
     val httpVersion: String,
     val payload: String,
+    val bodySize: Int,
+    val headers: Map<String, List<String>>,
+    val queryParams: Map<String, List<String>>,
+    val clientIp: String,
 )

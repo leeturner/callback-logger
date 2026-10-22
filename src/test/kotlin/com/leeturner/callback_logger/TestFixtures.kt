@@ -13,10 +13,12 @@ object TestFixtures {
       body: String = "",
       contentType: String = MediaType.APPLICATION_JSON,
       method: String = "POST",
+      headers: Map<String, String> = emptyMap(),
   ): ValidatableResponse =
       given()
           .baseUri("http://localhost")
           .port(server.port())
+          .headers(headers)
           .contentType(contentType)
           .body(body)
           .request(method, path)

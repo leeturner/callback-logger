@@ -195,6 +195,38 @@ class CallbackWebListViewMultipleCallbacksTest(private val server: WireMockServe
     }
   }
 
+  @Test
+  internal fun `a callback shows its client ip, body size, headers and query parameters`(spec: RequestSpecification) {
+    server.resetRequests()
+    sendCallback(server, "/hook?event=ping&id=1&id=2", TEST_JSON_PAYLOAD,
+        headers = mapOf("X-Signature" to "sha256=abc", "X-Forwarded-For" to "203.0.113.7"))
+
+    expectThat(inboxPage(spec)) {
+      get { getString("html.body.'**'.find {it.@id == 'callback-1-clientIp'}.text()") } isEqualTo "203.0.113.7"
+      get { getString("html.body.'**'.find {it.@id == 'callback-1-bodySize'}.text()") } isEqualTo
+          "${TEST_JSON_PAYLOAD.length} B"
+      get {
+        getString("html.body.'**'.find {it.@id == 'callback-1-headers'}.'**'.find {it.th == 'X-Signature'}.td.text()")
+      } isEqualTo "sha256=abc"
+      get {
+        getString("html.body.'**'.find {it.@id == 'callback-1-queryParams'}.'**'.find {it.th == 'id'}.td.text()")
+      } isEqualTo "1, 2"
+    }
+  }
+
+  @Test
+  internal fun `a callback without a body or query string hides its size and query parameters`(
+      spec: RequestSpecification
+  ) {
+    server.resetRequests()
+    sendCallback(server, "/ping", method = "GET")
+
+    expectThat(inboxPage(spec)) {
+      get { getString("html.body.'**'.find {it.@id == 'callback-1-bodySize'}") }.isNull()
+      get { getString("html.body.'**'.find {it.@id == 'callback-1-queryParams'}") }.isNull()
+    }
+  }
+
   private fun inboxPage(spec: RequestSpecification): XmlPath =
       spec
           .`when`()
