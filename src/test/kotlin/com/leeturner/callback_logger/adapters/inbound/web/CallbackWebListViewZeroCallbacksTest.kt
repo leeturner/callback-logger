@@ -139,7 +139,7 @@ class CallbackWebListViewZeroCallbacksTest(
 
     // the HTML parser drops attributes with a colon in their name, so check the raw markup
     expectThat(page) {
-      contains("""data-init="@get('/callback-logger/inbox/stream')"""")
+      contains("""data-init="@get('/callback-logger/inbox/stream', {retryMaxCount: Infinity})"""")
       not().contains("auto-refresh")
       not().contains("data-on-interval")
     }

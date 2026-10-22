@@ -161,8 +161,9 @@
         </div>
 
         <!-- Keeps a stream open so new callbacks appear as they arrive. It sits outside the fragments the stream
-             patches, or each patch would open the stream again. -->
-        <div id="inbox-stream" data-init="@get('/callback-logger/inbox/stream')"></div>
+             patches, or each patch would open the stream again. Datastar gives up after 10 retries by default,
+             which would leave the inbox frozen after a few minutes of the app being down, so it keeps trying. -->
+        <div id="inbox-stream" data-init="@get('/callback-logger/inbox/stream', {retryMaxCount: Infinity})"></div>
 
         <div th:replace="~{inbox :: list}">Callbacks</div>
     </div>
