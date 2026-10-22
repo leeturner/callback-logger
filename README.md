@@ -1,11 +1,5 @@
 # callback-logger
 
-![buildStatus](https://img.shields.io/github/workflow/status/leeturner/callback-logger/Java%20CI%20with%20Gradle?style=plastic)
-![latestVersion](https://img.shields.io/github/v/release/leeturner/callback-logger)
-<a href="https://twitter.com/leeturner" target="_blank">
-<img alt="Twitter: leeturner" src="https://img.shields.io/twitter/follow/leeturner.svg?style=social" />
-</a>
-
 > Simple service to receive callbacks. Useful for when testing APIs locally that send callbacks
 
 ## 🦿 Prerequisites
@@ -115,7 +109,7 @@ itself, so the inbox works with no internet connection:
 👤 **Lee Turner**
 
 * Mastodon: <a href="https://hachyderm.io/@leeturner" target="_blank">@leeturner</a>
-* Twitter: <a href="https://twitter.com/leeturner" target="_blank">@leeturner</a>
+* Bluesky: <a href="https://bsky.app/profile/leeturner.bsky.social" target="_blank">@leeturner.bsky.social</a>
 
 Feel free to ping me 😉
 
