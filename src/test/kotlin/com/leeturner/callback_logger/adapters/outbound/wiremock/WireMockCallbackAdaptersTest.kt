@@ -11,6 +11,7 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import strikt.api.expectThat
 import strikt.arrow.isRight
+import strikt.assertions.contains
 import strikt.assertions.containsExactly
 import strikt.assertions.hasSize
 import strikt.assertions.isEmpty
@@ -41,6 +42,21 @@ class WireMockCallbackAdaptersTest(
       get { httpVersion } isEqualTo "HTTP/1.1"
       get { payload } isEqualTo TEST_XML_PAYLOAD
       get { timestamp } isGreaterThan LocalDateTime.now().minusMinutes(1)
+    }
+  }
+
+  @Test
+  internal fun `a received callback is listed with its headers, query parameters, client ip and body size`() {
+    sendCallback(server, "/hook?event=ping&id=1&id=2", TEST_XML_PAYLOAD, MediaType.APPLICATION_XML,
+        // the forwarded ip, as the remote address could be IPv4 or IPv6 loopback
+        headers = mapOf("X-Signature" to "sha256=abc", "X-Forwarded-For" to "203.0.113.7"))
+
+    expectThat(lister.listNewestFirst()).isRight().get { value.single() }.and {
+      get { headers["X-Signature"] } isEqualTo listOf("sha256=abc")
+      get { headers.keys }.contains("Content-Type")
+      get { queryParams } isEqualTo mapOf("event" to listOf("ping"), "id" to listOf("1", "2"))
+      get { clientIp } isEqualTo "203.0.113.7"
+      get { bodySize } isEqualTo TEST_XML_PAYLOAD.length
     }
   }
 

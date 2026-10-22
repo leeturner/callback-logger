@@ -13,4 +13,8 @@ internal fun ServeEvent.toDomain(): Callback =
         httpMethod = this.request.method.name,
         httpVersion = this.request.protocol,
         payload = this.request.bodyAsString,
+        bodySize = this.request.body.size,
+        headers = this.request.headers.all().associate { it.key() to it.values() },
+        queryParams = this.request.queryParams.values.associate { it.key() to it.values() },
+        clientIp = this.request.clientIp,
     )
