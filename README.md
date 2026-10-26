@@ -1,20 +1,37 @@
 # callback-logger
 
-> Simple service to receive callbacks. Useful for when testing APIs locally that send callbacks
+[![Build](https://github.com/leeturner/callback-logger/actions/workflows/build.yml/badge.svg)](https://github.com/leeturner/callback-logger/actions/workflows/build.yml)
+[![Licence](https://img.shields.io/github/license/leeturner/callback-logger)](LICENSE)
 
-## 🦿 Prerequisites
+A small Kotlin and Micronaut service that receives callbacks, for testing APIs locally that send them. Point the API
+at port `7071` and every request it sends is recorded, whatever its path, method or content type. Then watch them
+arrive in the web UI on port `7070`.
 
-- Java 25 or above (callback-logger runs on the JVM only; a GraalVM native image is not supported)
+![The callback-logger inbox](docs/callback-logger-ui.png)
 
-## 🛠 Installation
+## Features
 
-1. Download latest sources and run:
- 
- ```shell script
+- Records callbacks to any path with any HTTP method, using an embedded [WireMock](https://wiremock.org/) server
+- A live inbox in the browser, with a **Copy as curl** button on every callback
+- Configurable response status code, payload and content type
+- Keeps the newest 1000 callbacks in memory by default, or as many as you choose
+- Works offline: every asset the web UI needs is served by the app itself
+
+## Requirements
+
+- Java 25 or later (callback-logger runs on the JVM only; a GraalVM native image is not supported)
+
+## Install
+
+There are no releases yet, so build and run it from source:
+
+```shell
+git clone https://github.com/leeturner/callback-logger.git
+cd callback-logger
 ./gradlew build run
 ```
 
-## ⌨️ Usage
+## Usage
 
 Callbacks are received by an embedded [WireMock](https://wiremock.org/) server on its own port, `7071`, while the
 web interface stays on `7070`. Point the API you are testing at **any path** on the callback port, with **any HTTP
@@ -42,10 +59,6 @@ More examples, including form posts, query strings and custom methods such as `P
 Each callback in the inbox has a **Copy as curl** button that copies a `curl` command to send it to the callback
 logger again.
 
-> **Breaking change:** callbacks used to be sent to `http://localhost:7070/callback-logger/api/callback`, plus any
-> custom callback URIs configured under `callback-logger.custom-callbacks`. Both are gone: send callbacks to the
-> callback port instead. The same paths still work there, only the port has changed.
-
 Paths under `/__admin` are reserved by WireMock. Its admin API is locked, so those requests are refused with a `401`
 and are not recorded as callbacks.
 
@@ -61,7 +74,7 @@ callback-logger {
 }
 ```
 
-### Specify the http response code
+### Set the HTTP response code
 
 By default, callback-logger returns a `200` response code for all callbacks.  If you need to return a different response
 code then you can define the response code in the `application.conf` file.  For example:
@@ -74,7 +87,7 @@ callback-logger {
 
 The application will fail to start if the response code is not a valid http response code.
 
-### Specify the http response payload
+### Set the HTTP response payload
 
 By default, callback-logger returns an empty string as the response payload for all callbacks, with a
 `Content-Type: application/json` header.  If you need to return a different response payload then you can change that
@@ -86,7 +99,7 @@ callback-logger {
 }
 ```
 
-### Specify the http response content type
+### Set the HTTP response content type
 
 By default, callback-logger returns a `Content-Type: application/json` header with every response, including when the
 setting is missing or blank.  If your payload is in a different format then set the content type to match.  For
@@ -117,76 +130,25 @@ The application will fail to start if the number is not greater than zero.
 
 ### Web UI
 
-`callback-logger` provides a simple web interface to allow you to see the callbacks you have received.  You can access
-the web interface by pointing your browser to `http://localhost:7070/callback-logger`.
+The web interface shows the callbacks you have received. Open
+`http://localhost:7070/callback-logger` in your browser.
 
 New callbacks appear in the inbox as they arrive, and clearing or deleting them updates every open tab. Press
 **Refresh** to reload the inbox on demand, **Clear All** to empty it, or the bin button on a callback to delete just
 that one. All of them update the page in place using [Datastar](https://data-star.dev/), without a full page reload.
 The page is styled with [Bulma](https://bulma.io/), and Bulma, Datastar and highlight.js are all served by the app
-itself, so the inbox works with no internet connection:
+itself, so the inbox works with no internet connection.
 
+## Building
 
-![](docs/callback-logger-ui.png)
+Run the tests with:
 
-
-## 🥼 Run tests
-
-```shell script
+```shell
 ./gradlew test
 ```
 
-## ✍️ Author
+Bug reports and ideas are welcome in [issues](https://github.com/leeturner/callback-logger/issues).
 
-👤 **Lee Turner**
+## Licence
 
-* Mastodon: <a href="https://hachyderm.io/@leeturner" target="_blank">@leeturner</a>
-* Bluesky: <a href="https://bsky.app/profile/leeturner.bsky.social" target="_blank">@leeturner.bsky.social</a>
-
-Feel free to ping me 😉
-
-## 🤝 Contributing
-
-Contributions are what make the open source community such an amazing place to be learn, inspire, and create. Any
-contributions you make are **greatly appreciated**.
-
-1. Open an issue first to discuss what you would like to change.
-1. Fork the Project
-1. Create your feature branch (`git checkout -b feature/amazing-feature`)
-1. Commit your changes (`git commit -m 'Add some amazing feature'`)
-1. Push to the branch (`git push origin feature/amazing-feature`)
-1. Open a pull request
-
-Please make sure to update tests as appropriate.
-
-## ❤ Show your support
-
-Give a ⭐️ if this project helped you!
-
-<a href="https://www.buymeacoffee.com/leeturner" target="_blank">
-    <img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" width="160">
-</a>
-
-## ☑️ TODO
-
-- [ ] Setup releases using jReleaser
-
-## 📝 License
-
-```
-Copyright © 2023 - Lee Turner
-
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
-
-   http://www.apache.org/licenses/LICENSE-2.0
-
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
-```
-
-_This README was generated by [readgen](https://github.com/theapache64/readgen)_ ❤
+Apache License 2.0. See [LICENSE](LICENSE).
