@@ -9,5 +9,5 @@ import com.github.tomakehurst.wiremock.stubbing.StubMappings
  * directory, which could replace the catch-all response depending on where the app is started.
  */
 internal object NoMappingsSource : MappingsSource, MappingsSaver by MappingsSaver.NOOP {
-  override fun loadMappingsInto(stubMappings: StubMappings) {}
+  override fun loadMappingsInto(stubMappings: StubMappings) = Unit
 }
