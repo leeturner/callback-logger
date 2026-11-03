@@ -5,6 +5,7 @@ plugins {
   id("com.gradleup.shadow") version "9.6.1"
   id("io.micronaut.application") version "5.0.2"
   id("io.micronaut.aot") version "5.0.2"
+  id("dev.detekt") version "2.0.0-alpha.6"
 }
 
 version = "0.1"
@@ -42,6 +43,9 @@ dependencies {
   testImplementation("io.strikt:strikt-arrow:0.35.1")
   testImplementation("com.tngtech.archunit:archunit:1.5.1")
   testImplementation("io.micronaut.test:micronaut-test-rest-assured")
+
+  // Each release is built for one detekt version: bump it with detekt
+  detektPlugins("io.github.leeturner:arrow-detekt-rules:0.3.0")
 }
 
 application { mainClass.set("com.leeturner.callback_logger.ApplicationKt") }
@@ -52,6 +56,14 @@ java {
 }
 
 kotlin { jvmToolchain { languageVersion.set(JavaLanguageVersion.of(25)) } }
+
+detekt {
+  config.setFrom(file("config/detekt/detekt.yml"))
+  buildUponDefaultConfig = true
+}
+
+// Plain `detekt` skips every rule that needs type resolution, such as ForbiddenMethodCall and IgnoredReturnValue
+tasks.check { dependsOn(tasks.detektMain, tasks.detektTest) }
 
 graalvmNative.toolchainDetection.set(false)
 

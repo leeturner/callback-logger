@@ -1,0 +1,15 @@
+complexity:
+  LongParameterList:
+    # Test fixtures take many optional values; only the ones a caller must pass count
+    ignoreDefaultParameters: true
+    # Bean factories take their config as @Property parameters, one per setting
+    ignoreAnnotatedParameter: ['Property']
+
+naming:
+  PackageNaming:
+    # The root package is callback_logger
+    packagePattern: '[a-z]+(\.[a-z][A-Za-z0-9_]*)*'
+
+performance:
+  SpreadOperator:
+    excludes: ['**/**Application**']

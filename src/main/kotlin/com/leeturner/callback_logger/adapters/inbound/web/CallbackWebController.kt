@@ -68,7 +68,7 @@ class CallbackWebController(
           { error ->
             logger.error("Failed to clear callbacks: {}", error)
             // thrown rather than returned, as @View would render a 500 response as an empty inbox
-            throw IllegalStateException("Failed to clear callbacks: $error")
+            error("Failed to clear callbacks: $error")
           },
           {
             changed()
@@ -83,7 +83,7 @@ class CallbackWebController(
           { error ->
             logger.error("Failed to delete callback {}: {}", id, error)
             // thrown rather than returned, as @View would render a 500 response as an empty inbox
-            throw IllegalStateException("Failed to delete callback $id: $error")
+            error("Failed to delete callback $id: $error")
           },
           {
             changed()
@@ -113,7 +113,7 @@ class CallbackWebController(
           { error ->
             logger.error("Failed to list callbacks: {}", error)
             // thrown rather than returned, as @View would render a 500 response as an empty inbox
-            throw IllegalStateException("Failed to list callbacks: $error")
+            error("Failed to list callbacks: $error")
           },
           { callbacks ->
             // WireMock receives callbacks on its own port, on any path
