@@ -21,6 +21,9 @@ repositories {
 }
 
 dependencies {
+  // Pulled in transitively by micronaut-views-thymeleaf at 3.1.5, which is vulnerable
+  constraints { implementation("org.thymeleaf:thymeleaf:3.1.7.RELEASE") }
+
   ksp("io.micronaut.serde:micronaut-serde-processor")
   implementation("io.micronaut.serde:micronaut-serde-jackson")
   implementation("io.micronaut.kotlin:micronaut-kotlin-extension-functions")
