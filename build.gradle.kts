@@ -38,7 +38,7 @@ dependencies {
   implementation("org.wiremock:wiremock-core:4.0.0-beta.42")
   implementation("org.wiremock:wiremock-jetty:4.0.0-beta.42")
   // WireMock 4 fails to start without an HttpClientFactory on the classpath
-  implementation("org.wiremock:wiremock-httpclient-apache5:4.0.0-beta.41")
+  implementation("org.wiremock:wiremock-httpclient-apache5:4.0.0-beta.42")
 
   testImplementation(platform("org.junit:junit-bom:6.1.3"))
   testImplementation("org.junit.jupiter:junit-jupiter")
