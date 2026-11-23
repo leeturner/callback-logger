@@ -35,7 +35,7 @@ dependencies {
   implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:${kotlinVersion}")
   runtimeOnly("ch.qos.logback:logback-classic")
   implementation("io.arrow-kt:arrow-core:2.3.0.1")
-  implementation("org.wiremock:wiremock-core:4.0.0-beta.42")
+  implementation("org.wiremock:wiremock-core:4.0.0-beta.44")
   implementation("org.wiremock:wiremock-jetty:4.0.0-beta.44")
   // WireMock 4 fails to start without an HttpClientFactory on the classpath
   implementation("org.wiremock:wiremock-httpclient-apache5:4.0.0-beta.44")
